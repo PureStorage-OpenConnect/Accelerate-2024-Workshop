@@ -1,0 +1,48 @@
+{
+    "arrays": [
+        {
+            "name": "gse-array01",
+            "UserName": "ps_ams_automation",
+            "Pass": "Codetheworld123!",
+            "Site": "FASiteA"
+        },
+        {
+            "name": "gse-array04",
+            "UserName": "ps_ams_automation",
+            "Pass": "Codetheworld123!",
+            "Site": "FASiteA"
+        }
+    ],
+    "sites": [
+        {
+            "name": "FASiteA",
+            "settings": [
+                {
+                    "Name": "BannerPath",
+                    "Value": ".\\banners\\standardbanner.txt"
+                },
+                {
+                    "Name": "GUIIdleTimeoutMinutes",
+                    "Value": "30"
+                },
+                {
+                    "Name": "NTPServersCommaDelmited",
+                    "Value": "time1.purestorage.com,time2.purestorage.com,time3.purestorage.com"
+                }
+            ]
+        },
+        {
+            "name": "FASiteB",
+            "settings": [
+                {
+                    "Name": "BannerPath",
+                    "Value": ".\\banners\\standardBanner.txt"
+                },
+                {
+                    "Name": "GUIIdleTimeout",
+                    "Value": "25"
+                }
+            ]
+        }
+    ]
+}

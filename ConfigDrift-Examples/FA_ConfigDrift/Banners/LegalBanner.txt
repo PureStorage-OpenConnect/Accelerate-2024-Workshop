@@ -1,0 +1,22 @@
+***********************************************
+*                                             *
+*          WARNING: RESTRICTED ACCESS          *
+*                                             *
+*    This system is the property of [Your     *
+*    Company Name]. Unauthorized access to,   *
+*    or use of, this system may be subject    *
+*    to civil and/or criminal penalties.      *
+*                                             *
+*    All access is logged and monitored.      *
+*                                             *
+*    By accessing this system, you agree to   *
+*    comply with [Your Company Name]'s        *
+*    acceptable use policy and confidentiality *
+*    requirements.                            *
+*                                             *
+*          Violators will be prosecuted.      *
+*                                             *
+*          [Your Company Name]                *
+*          [Contact Information]              *
+*                                             *
+***********************************************

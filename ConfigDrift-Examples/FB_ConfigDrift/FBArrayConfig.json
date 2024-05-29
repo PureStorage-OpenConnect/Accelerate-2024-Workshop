@@ -1,0 +1,46 @@
+{
+    "FlashBlades": [
+        {
+            "name": "gse-fb01",
+            "APIToken": "T-2c039bc1-9ec6-40a6-8774-5435dde6a620",
+            "Site": "FBSiteA"
+        },
+        {
+            "name": "gse-fb03",
+            "APIToken": "T-7a1554d1-e067-483b-88d4-7b042716880a",
+            "Site": "FBSiteA"
+        }
+    ],
+    "sites": [
+        {
+            "name": "FBSiteA",
+            "settings": [
+                {
+                    "Name": "BannerPath",
+                    "Value": ".\\banners\\legalbanner.txt"
+                },
+                {
+                    "Name": "GUIIdleTimeoutMinutes",
+                    "Value": "31"
+                },
+                {
+                    "Name": "NTPServersCommaDelmited",
+                    "Value": "0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp.org"
+                }
+            ]
+        },
+        {
+            "name": "FBSiteB",
+            "settings": [
+                {
+                    "Name": "BannerPath",
+                    "Value": ".\\banners\\standardBanner.txt"
+                },
+                {
+                    "Name": "GUIIdleTimeout",
+                    "Value": "25"
+                }
+            ]
+        }
+    ]
+}
