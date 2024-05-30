@@ -1,15 +1,9 @@
 {
     "arrays": [
         {
-            "name": "gse-array01",
-            "UserName": "ps_ams_automation",
-            "Pass": "Codetheworld123!",
-            "Site": "FASiteA"
-        },
-        {
-            "name": "gse-array04",
-            "UserName": "ps_ams_automation",
-            "Pass": "Codetheworld123!",
+            "name": "flasharray1",
+            "UserName": "workshop",
+            "Pass": "Workshop123!",
             "Site": "FASiteA"
         }
     ],

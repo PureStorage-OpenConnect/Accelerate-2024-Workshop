@@ -1,13 +1,8 @@
 {
     "FlashBlades": [
         {
-            "name": "gse-fb01",
-            "APIToken": "T-2c039bc1-9ec6-40a6-8774-5435dde6a620",
-            "Site": "FBSiteA"
-        },
-        {
-            "name": "gse-fb03",
-            "APIToken": "T-7a1554d1-e067-483b-88d4-7b042716880a",
+            "name": "flashblade1",
+            "APIToken": "T-4a4c121c-c920-4223-ae0f-321a436ba747",
             "Site": "FBSiteA"
         }
     ],
