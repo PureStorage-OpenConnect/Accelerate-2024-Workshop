@@ -1,5 +1,5 @@
 {
-    "FlashBlades": [
+    "flashblades": [
         {
             "name": "flashblade1",
             "APIToken": "T-4a4c121c-c920-4223-ae0f-321a436ba747",
@@ -12,7 +12,7 @@
             "settings": [
                 {
                     "Name": "BannerPath",
-                    "Value": ".\\banners\\legalbanner.txt"
+                    "Value": "C:\\Workshop\\ConfigDrift-Examples\\FB_ConfigDrift\\Banners\\standardbanner.txt"
                 },
                 {
                     "Name": "GUIIdleTimeoutMinutes",
@@ -29,11 +29,15 @@
             "settings": [
                 {
                     "Name": "BannerPath",
-                    "Value": ".\\banners\\standardBanner.txt"
+                    "Value": "C:\\Workshop\\ConfigDrift-Examples\\FB_ConfigDrift\\Banners\\standardbanner.txt"
                 },
                 {
                     "Name": "GUIIdleTimeout",
                     "Value": "25"
+                },
+                {
+                    "Name": "NTPServersCommaDelmited",
+                    "Value": "0.us.pool.ntp.org,1.us.pool.ntp.org,2.us.pool.ntp.org,3.us.pool.ntp.org"
                 }
             ]
         }
