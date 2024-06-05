@@ -13,6 +13,7 @@ This will provde the FlashArray Collections, but to ensure you have the latest v
 Ensure you have the Pure Storage python SDK installed as well.
 
 `pip3 install purestorage`
+
 `pip3 install py-pure-client`
 
 To run Section 1 of the Workshop will require one FlashArray, running a minimum Purity//FA of 6.1.3. This should have iSCSI or FC connectivity that will allow
