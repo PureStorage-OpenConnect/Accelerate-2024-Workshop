@@ -1,8 +1,8 @@
 # Ansible FlashArray Workshop
-This content is a toolit for demonstrating Ansible's capabilities on the Pure Storage FlashArray by providing hands-on, or self-paced training.
+This content is a toolkit for demonstrating Ansible's capabilities on the Pure Storage FlashArray by providing hands-on, or self-paced training.
 
 ## Workshop Pre-Requisites
-You will need access to a Linux server with the latest version of Ansible installed. The Workshop was validated on Ubuntu, therefore if you are using CentOS or RHEL, you may been to install additional packages for some of the Linux tasks.
+You will need access to a Linux server with the latest version of Ansible installed. 
 
 Your Linux server should have either iSCSI or FC connectivity to the FlashArray(s) and network access to the FlashArray management port.
 
@@ -39,14 +39,6 @@ Section 3 of the Workshop requires that your FlashArrays are enabled for FA-File
  - [Exercise 2.3 - Configuring asynchronous replication](2.3-async-rep)
  - [Exercise 2.4 - Configuring FlashArray replication schedules](2.4-schedule)
  - [Exercise 2.5 - Configuring common infrastructure settings on a FlashArray](2.5-infra)
-
-## Section 3 - Ansible FlashArray FA-Files Exercises
-
-This section requires that your FlashArray has been enabled by Pure Support to use FA-Files.
-
- - [Exercise 3.0 - Creating directories and exports on a FlashArray](3.0-exports)
- - [Exercise 3.1 - Configuring FA-Files DNS on a FlashArray](3.1-files-dns)
- - [Exercise 3.2 - Configuring FA-Files replication](3.2-files-replication)
 
 ## Advanced Information
 
