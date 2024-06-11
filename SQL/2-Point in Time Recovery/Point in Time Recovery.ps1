@@ -6,9 +6,6 @@
 #    feature. This uses a FlashArray snapshot as the base of the restore, then restores 
 #    a log backup.
 #
-# Prerequisites:
-# 1. A SQL Server running SQL Server 2022 with a database having data files and a log file on two volumes that are each on different FlashArrays.
-#
 # Usage Notes:
 #   Each section of the script is meant to be run one after the other. 
 #   The script is not meant to be executed all at once.
@@ -21,20 +18,14 @@
 
 
 
-# Import powershell modules
-Import-Module dbatools
-Import-Module PureStoragePowerShellSDK2
-
-
 
 # Let's initalize some variables we'll use for connections to our SQL Server and it's base OS
-$TargetSQLServer = 'SqlServer1'                       # SQL Server Name
-$ArrayName       = 'flasharray1.example.com'          # FlashArray
-$DbName          = 'Database1'                        # Name of database
-$BackupShare     = '\\FileServer1\SHARE\BACKUP'       # File system location to write the backup metadata file
-$PGroupName      = 'SqlServer1_Pg'                    # Name of the Protection Group on FlashArray1
-$FlashArrayDbVol = 'Fa_Sql_Volume_1'                  # Volume name on FlashArray containing database files
-$TargetDisk      = '6000c29240f79ca82ef017e1fdc000a7' # The serial number if the Windows volume containing database files
+$TargetSQLServer = 'Windows1'                         # SQL Server Name
+$ArrayName       = 'flasharray1.testdrive.local'      # FlashArray
+$DbName          = 'TPCC100'                          # Name of database
+$BackupShare     = '\\Windows2\backup'                # File system location to write the backup metadata file
+$FlashArrayDbVol = 'Windows1Vol1'                     # Volume name on FlashArray containing database files
+$TargetDisk      = 'B64D29B183714E0600012395'         # The serial number if the Windows volume containing database files
 
 
 
@@ -43,7 +34,7 @@ $SqlServerSession = New-PSSession -ComputerName $TargetSQLServer
 
 
 
-# Build a persistent SMO connection
+# Build a persistent SMO connection, you can ignore the warning thrown.
 $SqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
 
 
@@ -53,21 +44,24 @@ Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName |
   Select-Object Name, SizeMB
 
 
+# Set credential to connect to FlashArray, username pureuser, password testdrive
+$Passowrd = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
+$Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Passowrd)
+
 
 # Connect to the FlashArray's REST API
-$Credential = Get-Credential
-$FlashArray = Connect-Pfa2Array –EndPoint $ArrayName -Credential $Credential -IgnoreCertificateError
+$FlashArray = Connect-Pfa2Array -EndPoint $ArrayName -Credential $Credential -IgnoreCertificateError
 
 
 
-# Freeze the database
+# Let's use the new SQL Server 2022 TSQL-based snapshot to take an application consistent snapshot with no external tools!
 $Query = "ALTER DATABASE $DbName SET SUSPEND_FOR_SNAPSHOT_BACKUP = ON"
 Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
 
 
 # Take a snapshot of the Protection Group while the database is frozen
-$Snapshot = New-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceName $PGroupName 
+$Snapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $FlashArrayDbVol 
 $Snapshot
 
 
@@ -105,7 +99,7 @@ $LogBackup = Backup-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Typ
 
 
 # Delete a table...I should update my resume, right? :P 
-Invoke-DbaQuery -SqlInstance $SqlInstance -Database FT_Demo -Query "DROP TABLE customer"
+Invoke-DbaQuery -SqlInstance $SqlInstance -Database $DbName -Query "DROP TABLE customer"
 
 
 
@@ -138,7 +132,7 @@ $ArrayName
 
 
 # Restore the snapshot over the volume
-New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($SnapshotName + ".$FlashArrayDbVol") -Overwrite $true
+New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($SnapshotName) -Overwrite $true
 
 
 
@@ -187,7 +181,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
 
 #Take a snapshot of the Protection Group while the database is frozen
-$Snapshot = New-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceName $PGroupName
+$Snapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $FlashArrayDbVol 
 $Snapshot
 
 
