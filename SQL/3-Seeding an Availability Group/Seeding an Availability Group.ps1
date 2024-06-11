@@ -3,20 +3,6 @@
 
 # Scenario
 # Seeding an Availability Group (AG) from SQL Server 2022's T-SQL Snapshot Backup
-
-# Prerequisites
-# 1. This demo uses the dbatools cmdlet Connect-DbaInstance to build a persistent 
-#    SMO session to the database instance.  This is required when using the T-SQL Snapshot 
-#    feature because the session in which the database is frozen for IO must stay active. 
-#    Other cmdlets disconnect immediately, which will thaw the database prematurely before 
-#    the snapshot is taken.
-# 2. Two SQL Servers running SQL Server 2022 with a database prepared to join an AG; 
-#     this database is on volumes on one FlashArray and are contained in a Protection Group, 
-#     and the soon-to-be secondary replica has volumes provisioned matching the primary in size and drive lettering.
-# 3.  Async snapshot replication between two FlashArrays replicating the Protection Group.
-# 4.  You've disabled or are, in some other way, accounting for log backups during the seeding process.
-# 5.  You already have the AG up and running, with both instances configured as replicas,
-# 6.  The database you want to seed is online on the primary but not the secondary.
 #
 # Usage Notes:
 #   Each section of the script is meant to be run one after the other. The script is not meant to be executed all at once.
@@ -35,18 +21,15 @@ Import-Module PureStoragePowerShellSDK2
 
 
 # Set up some variables and sessions to talk to the replicas in the AG
-$PrimarySqlServer   = 'SqlServer1'                          # SQL Server Name - Primary Replica
-$SecondarySqlServer = 'SqlServer2'                          # SQL Server Name - Secondary Replica
-$AgName             = 'ag1'                                 # Name of availability group
-$DbName             = 'AgTestDb1'                           # Name of database to place in AG
-$BackupShare        = '\\FileServer1\SHARE\BACKUP'          # File location for metadata backup file.
-$PrimaryArrayName   = 'flasharray1.example.com'             # FlashArray containing the volumes for our primary replica
-$SecondaryArrayName = 'flasharray2.example.com'             # FlashArray containing the volumes for our secondary replica
-$SourcePGroupName   = 'SqlServer1_Pg'                       # Name of the Protection Group on FlashArray1
-$TargetPGroupName   = 'flasharray1:SqlServer1_Pg'           # Name of the Protection Group replicated from FlashArray1 to FlashArray2, in the format of ArrayName:ProtectionGroupName
-$PrimaryFaDbVol     = 'Fa1_Sql_Volume_1'                    # Volume name on FlashArray containing database files of the primary replica
-$SecondaryFaDbVol   = 'Fa2_Sql_Volume_1'                    # Volume name on FlashArray containing database files of the secondary replica
-$TargetDisk         = '6000c29668589f61a386218139e21bb0'    # The serial number if the Windows volume containing database files
+$PrimarySqlServer   = 'Windows1'                    # SQL Server Name - Primary Replica
+$SecondarySqlServer = 'Windows2'                    # SQL Server Name - Secondary Replica
+$AgName             = 'ag1'                         # Name of availability group
+$DbName             = 'TPCC100'                     # Name of database to place in AG
+$BackupShare        = '\\Windows2\backup'           # File location for metadata backup file.
+$FlashArrayName     = 'flasharray1.testdrive.local' # FlashArray containing the volumes for our primary replica
+$SourceVolumeName   = 'Windows1Vol1'                # Name of the Protection Group on FlashArray1
+$TargetVolumeName   = 'Windows2Vol1'                # Name of the Protection Group replicated from FlashArray1 to FlashArray2, in the format of ArrayName:ProtectionGroupName
+$TargetDisk         = 'B64D29B183714E0600012396'    # The serial number if the Windows volume containing database files
 
 
 
@@ -60,10 +43,13 @@ $SqlInstancePrimary = Connect-DbaInstance -SqlInstance $PrimarySqlServer -TrustS
 $SqlInstanceSecondary = Connect-DbaInstance -SqlInstance $SecondarySqlServer -TrustServerCertificate -NonPooledConnection 
 
 
+# Set credential to connect to FlashArray, username pureuser, password testdrive
+$Passowrd = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
+$Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Passowrd)
+
 
 # Connect to the FlashArray with for the AG Primary
-$Credential = Get-Credential
-$FlashArrayPrimary = Connect-Pfa2Array –EndPoint $PrimaryArrayName -Credential $Credential -IgnoreCertificateError
+$FlashArray = Connect-Pfa2Array -EndPoint $FlashArrayName -Credential $Credential -IgnoreCertificateError
 
 
 
@@ -74,7 +60,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 
 
 # Take a snapshot of the Protection Group, and replicate it to our other array
-$SourceSnapshot = New-Pfa2ProtectionGroupSnapshot -Array $FlashArrayPrimary -SourceName $SourcePGroupName -ForReplication $true -ReplicateNow $true
+$SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
 
 
 
@@ -88,35 +74,9 @@ Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 
 
 
-# Connect to the FlashArray's REST API where the secondary's data is located
-$FlashArraySecondary = Connect-Pfa2Array –EndPoint $SecondaryArrayName -Credential $Credential -IgnoreCertificateError
-
-
-# This is a loop that will block until the snapshot has completed replicating between the two arrays. 
-Write-Warning "Obtaining the most recent snapshot for the protection group..."
-$TargetSnapshot = $null
-do {
-    Write-Warning "Waiting for snapshot to replicate to target array..."
-    $TargetSnapshot = Get-Pfa2ProtectionGroupSnapshotTransfer -Array $FlashArraySecondary -Name $TargetPGroupName | 
-            Where-Object { $_.Name -eq "$TargetPGroupName.$($SourceSnapshot.Suffix)" } 
-
-    if ( $TargetSnapshot -and $TargetSnapshot.Progress -ne 1.0 ){
-        Write-Warning "Snapshot $($TargetSnapshot.Name) found on Target Array...replication progress is $($TargetSnapshot.Progress)"
-        Start-Sleep 3
-    }
-
-} while ( [string]::IsNullOrEmpty($TargetSnapshot.Completed) -or ($TargetSnapshot.Progress -ne 1.0) )
-Write-Warning "Snapshot $($TargetSnapshot.Name) replicated to Target Array. Completed at $($TargetSnapshot.Completed)"
-
-
-### Diagnostic
-# Use this code to output the state of the variables before moving on in the script
-# Check the snapshot names...ensuring the the snapshot suffix is the same for each and 
-# that the TargetSnapshot.Completed is populated with the completetion date and time and that TargetSnapshot.Progress is 1 
-# $SourceSnapshot.Name
-# $TargetSnapshot.Name
-# $TargetSnapshot.Completed
-# $TargetSnapshot.Progress
+# Offline the databases on the Secondary Replica
+$Query = "ALTER DATABASE [$DbName] SET OFFLINE WITH ROLLBACK IMMEDIATE"
+Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query
 
 
 
@@ -126,7 +86,8 @@ Invoke-Command -Session $SecondarySession -ScriptBlock { Get-Disk | Where-Object
 
 
 # Overwrite the volumes on the Secondary from the protection group snapshot
-New-Pfa2Volume -Array $FlashArraySecondary -Name $SecondaryFaDbVol -SourceName ($TargetSnapshot.Name + ".$PrimaryFaDbVol") -Overwrite $true
+New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName ($SourceSnapshot.Name) -Overwrite $true
+
 
 
 
@@ -153,21 +114,50 @@ Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Quer
 
 
 
-# Set the seeding mode on the Seconary to manual
-$Query = "ALTER AVAILABILITY GROUP [$AgName] MODIFY REPLICA ON N'$PrimarySqlServer' WITH (SEEDING_MODE = MANUAL)"
-Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query -Verbose
 
 
 
-# Add the database to the AG
-$Query = "ALTER AVAILABILITY GROUP [$AgName] ADD DATABASE [$DbName];"
-Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query -Verbose
+
+
+#Now create a new certificate on Windows1, backup the certificate on Windows1 and restore it to Windows2
+New-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Name ag_cert -Subject ag_cert -StartDate (Get-Date) -ExpirationDate (Get-Date).AddYears(10) -Confirm:$false
+Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -Path $BackupShare -EncryptionPassword $Credential.Password -Confirm:$false
+
+
+$Certificate = (Get-DbaFile -SqlInstance $SqlInstancePrimary -Path $BackupShare -FileType cer).FileName
+Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -DecryptionPassword $Credential.Password -Confirm:$false
+
+
+
+
+
+$Query = 'GRANT ALTER ANY AVAILABILITY GROUP TO [NT AUTHORITY\SYSTEM];
+GRANT CONNECT SQL TO [NT AUTHORITY\SYSTEM];
+GRANT VIEW SERVER STATE TO [NT AUTHORITY\SYSTEM];
+GRANT CONNECT ON ENDPOINT::Hadr_Endpoint TO [NT AUTHORITY\ANONYMOUS LOGON]
+'
+Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
+Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query -Verbose
+
+
+
+#Now, let's create the AG, lots 'o parameters. This creates a clusterless, manual failover AG using the certificate we just created to authenticate the database mirroring endpoints
+New-DbaAvailabilityGroup `
+    -Primary $SqlInstancePrimary `
+    -Secondary $SqlInstanceSecondary `
+    -Name $AgName `
+    -Database $DbName `
+    -ClusterType None  `
+    -FailoverMode Manual `
+    -SeedingMode Manual `
+    -SharedPath $BackupShare `
+    -Certificate 'ag_cert' `
+    -Verbose -Confirm:$false
 
 
 
 # Now let's check the status of the AG...check to see if the SynchronizationState is Synchronized
 Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName
-
 
 
 

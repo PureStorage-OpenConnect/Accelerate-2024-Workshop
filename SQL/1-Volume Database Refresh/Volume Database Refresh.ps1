@@ -28,7 +28,11 @@
 
 
 # Install the required PowerShell module, click yes to all for the popups regarding installation.
+# Click 'yes to all' for the popups regarding installation. 
+# dbatools in not required but makes the workflow easier
 Install-Module PureStoragePowerShellSDK2
+Install-Module dbatools
+
 
 
 ##
@@ -40,7 +44,6 @@ Install-Module PureStoragePowerShellSDK2
 # Declare variables
 $Target                  = 'Windows2'                                       # Name of target VM
 $ArrayName               = 'flasharray1.testdrive.local'                    # FlashArray FQDN
-$DatabaseName            = 'AdventureWorks'                                 # Database to be refreshed
 $TargetDiskSerialNumber  = 'B64D29B183714E0600012396'                       # Target Disk Serial Number
 $SourceVolumeName        = 'Windows1Vol1'                                   # Source volume name on FlashArray
 $TargetVolumeName        = 'Windows2Vol1'                                   # Target volume name on FlashArray
@@ -86,7 +89,7 @@ Invoke-Command -Session $TargetSession -ScriptBlock { Get-Disk | ? { $_.SerialNu
 
 # Online the database
 $Query = "CREATE DATABASE [TPCC100] ON ( FILENAME = N'D:\SQL\tpcc100.mdf' ), ( FILENAME = N'D:\SQL\tpcc100_log.ldf' ) FOR ATTACH"
-Invoke-Sqlcmd -ServerInstance $Target -Database master -Query $Query
+Invoke-DbaQuery -ServerInstance $Target -Database master -Query $Query
 
 
 
