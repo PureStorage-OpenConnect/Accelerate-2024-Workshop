@@ -29,10 +29,6 @@ $TargetDisk      = 'B64D29B183714E0600012395'         # The serial number if the
 
 
 
-# Build a PowerShell Remoting Session to the Server
-$SqlServerSession = New-PSSession -ComputerName $TargetSQLServer
-
-
 
 # Build a persistent SMO connection, you can ignore the warning thrown.
 $SqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
@@ -116,7 +112,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Database master -Query $Query
 
 
 # Offline the volume
-Invoke-Command -Session $SqlServerSession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk } | Set-Disk -IsOffline $True }
+Get-Disk | Where-Object { $_.SerialNumber -eq $TargetDisk } | Set-Disk -IsOffline $True 
 
 
 
@@ -137,7 +133,7 @@ New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($SnapshotN
 
 
 # Online the volume
-Invoke-Command -Session $SqlServerSession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk} | Set-Disk -IsOffline $False }
+Get-Disk | Where-Object { $_.SerialNumber -eq $TargetDisk} | Set-Disk -IsOffline $False
 
 
 
@@ -198,3 +194,5 @@ $Stop = (Get-Date)
 
 
 Write-Output "The snapshot time takes...$(($Stop - $Start).Milliseconds)ms!"
+
+# When you are finished, move on to demo 3 - Click File->Open->.\Accelerate-2024-Workshop-main\SQL\3-Seeding an Availability Group

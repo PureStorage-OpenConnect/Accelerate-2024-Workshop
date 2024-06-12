@@ -134,7 +134,6 @@ Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -
 $Query = 'GRANT ALTER ANY AVAILABILITY GROUP TO [NT AUTHORITY\SYSTEM];
 GRANT CONNECT SQL TO [NT AUTHORITY\SYSTEM];
 GRANT VIEW SERVER STATE TO [NT AUTHORITY\SYSTEM];
-GRANT CONNECT ON ENDPOINT::Hadr_Endpoint TO [NT AUTHORITY\ANONYMOUS LOGON]
 '
 Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query -Verbose
@@ -157,15 +156,11 @@ New-DbaAvailabilityGroup `
 
 
 # Now let's check the status of the AG...check to see if the SynchronizationState is Synchronized
-Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName
+Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName 
 
 
 
 
 
-#RESET DEMO by removing database from the AG
-Get-DbaConnectedInstance | Disconnect-DbaInstance
-Remove-PSSession $SecondarySession
-$Query = "ALTER AVAILABILITY GROUP [$AgName] REMOVE DATABASE [$DbName];"
-Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query
-Remove-DbaDatabase -SqlInstance $SqlInstanceSecondary -Database FT_DEMO -Confirm:$false 
+
+# When you are finished, move on to demo 4 - Click File->Open->.\Accelerate-2024-Workshop-main\SQL\4-Working with the FlashArray API\Working with the FlashArray API.ps1
