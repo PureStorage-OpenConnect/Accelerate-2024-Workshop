@@ -1,0 +1,33 @@
+---
+- name: INFRASTRUCTURE SETTINGS
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CONFIGURE NTP
+      purestorage.flasharray.purefa_ntp:
+        ntp_servers:
+          - 0.pool.ntp.org
+          - 1.pool.ntp.org
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: CONFIGURE DNS
+      purestorage.flasharray.purefa_dns:
+        nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: CONFIGURE SYSLOG
+      purestorage.flasharray.purefa_syslog:
+        name: acme_syslog
+        address: syslog.acme.com
+        port: 514
+        protocol: tcp
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

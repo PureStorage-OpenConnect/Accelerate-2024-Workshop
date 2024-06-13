@@ -1,0 +1,16 @@
+---
+- name: CONNECT SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+    vol: volume_a
+  tasks:
+    - name: CONNECT VOLUMES
+      purestorage.flasharray.purefa_host:
+        name: "{{ ansible_hostname }}"
+        volume: "{{ vol }}"
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

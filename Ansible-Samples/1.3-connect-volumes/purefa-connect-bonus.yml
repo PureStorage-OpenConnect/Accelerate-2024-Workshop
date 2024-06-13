@@ -1,0 +1,47 @@
+---
+- name: CONNECT SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+    vol: volume_a
+  tasks:
+    - name: CONNECT VOLUMES
+      purestorage.flasharray.purefa_host:
+        name: "{{ ansible_hostname }}"
+        volume: "{{ vol }}"
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: GET VOLUME SERIAL NUMBER
+      purestorage.flasharray.purefa_info:
+        gather_subset: volumes
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+      register: volumes_data
+
+    - set_fact:
+        volume_serial: "{{ volumes_data.purefa_info.volumes[vol].serial }}"
+
+    - name: RESCAN MULTIPATH
+      ansible.builtin.command: /usr/sbin/multipath -r
+      ansible.builtin.command: /usr/bin/scsi-rescan
+
+    - name: GET DEVICE ID FOR VOLUME
+      ansible.builtin.shell:
+        cmd: /usr/sbin/multipath -ll |grep -i {{ volume_serial }}| awk '{print $2}'
+      register: mpath_dev
+
+    - name: FORMAT VOLUME
+      community.general.filesystem:
+        fstype: ext4
+        dev: '/dev/{{ mpath_dev.stdout }}'
+
+    - name: MOUNT VOLUME
+      ansible.posix.mount:
+        path: "/workshop-mount"
+        fstype: ext4
+        src: '/dev/{{ mpath_dev.stdout }}'
+        state: mounted

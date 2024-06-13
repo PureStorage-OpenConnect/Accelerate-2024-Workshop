@@ -1,0 +1,15 @@
+---
+- name: ASYNC SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: UPDATE PG
+      purestorage.flasharray.purefa_pg:
+        name: workshop-pg
+        target: <<target array name>>
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

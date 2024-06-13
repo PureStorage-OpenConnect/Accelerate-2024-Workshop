@@ -1,0 +1,17 @@
+---
+- name: PROTECTION GROUP SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CREATE PROTECTION GROUP
+      purestorage.flasharray.purefa_pg:
+        name: workshop-pg
+        volume:
+          - volume_b
+          - volume_c
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

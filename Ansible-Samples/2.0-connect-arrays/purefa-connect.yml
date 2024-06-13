@@ -1,0 +1,25 @@
+---
+- name: REPLICATION CONNECTION
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+    target_url: flasharray2.testdrive.local
+    target_api: 24a96e35-e0e2-806e-c0cc-eaf45e7fa887
+  tasks:
+    - name: CREATE ASYNC CONNECTION
+      purestorage.flasharray.purefa_connect:
+        target_url: "{{ target_url }}"
+        target_api: "{{ target_api }}"
+        connection: async
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+    - name: CREATE SYNC CONNECTION
+      purestorage.flasharray.purefa_connect:
+        target_url: "{{ target_url }}"
+        target_api: "{{ target_api }}"
+        connection: sync
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

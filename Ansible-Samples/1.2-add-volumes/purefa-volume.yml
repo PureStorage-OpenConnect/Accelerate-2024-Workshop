@@ -1,0 +1,19 @@
+---
+- name: VOLUME SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CREATE VOLUMES
+      purestorage.flasharray.purefa_volume:
+        name: volume_{{ item }}
+        size: 32G
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+      loop:
+        - a
+        - b
+        - c

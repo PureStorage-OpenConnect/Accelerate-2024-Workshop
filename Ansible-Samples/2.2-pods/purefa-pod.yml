@@ -1,0 +1,21 @@
+---
+- name: ACTIVECLUSTER POD
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CREATE POD
+      purestorage.flasharray.purefa_pod:
+        name: pod-1
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: STRETCH POD
+      purestorage.flasharray.purefa_pod:
+        name: pod-1
+        stretch: <<target_array_name>>
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

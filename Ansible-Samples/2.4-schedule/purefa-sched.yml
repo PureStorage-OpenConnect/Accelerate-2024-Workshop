@@ -1,0 +1,31 @@
+---
+- name: PROTECTION GROUP SCHEDULING
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: LOCAL SNAP SCHEDULE
+      purestorage.flasharray.purefa_pgsched:
+        name: workshop-pg
+        schedule: snapshot
+        enabled: true
+        snap_frequency: 86400
+        snap_at: 15:30:00
+        days: 2
+        per_day: 5
+        all_for: 4
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: REPLICATION SCHEDULE
+      purestorage.flasharray.purefa_pgsched:
+        name: workshop-pg
+        schedule: replication
+        replicate_frequency: 3600
+        target_per_day: 10
+        target_all_for: 7
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

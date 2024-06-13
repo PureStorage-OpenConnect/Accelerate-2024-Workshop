@@ -1,0 +1,30 @@
+---
+- name: FA-FILES SETUP
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CREATE FILESYSTEM
+      purestorage.flasharray.purefa_fs:
+        name: workshop
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: CREATE DIRECTORY
+      purestorage.flasharray.purefa_directory:
+        name: dir1
+        filesystem: workshop
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+
+    - name: EXPORT DIRECTORY
+      purestorage.flasharray.purefa_export:
+        name: workshop_dir
+        directory: dir1
+        filesystem: workshop
+        nfs_policy: nfs-simple
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

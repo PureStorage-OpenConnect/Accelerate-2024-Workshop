@@ -1,0 +1,17 @@
+---
+- name: NETWORKING
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: CREATE ASYNC CONNECTION
+      purestorage.flasharray.purefa_connect:
+        name: ct0.eth8
+        gateway: 10.34.56.1
+        address: "10.34.56.23/24"
+        mtu: 9000
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"

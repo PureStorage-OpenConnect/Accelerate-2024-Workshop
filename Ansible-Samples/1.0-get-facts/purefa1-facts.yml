@@ -1,0 +1,28 @@
+---
+- name: GRAB FLASHARRAY FACTS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    url: flasharray1.testdrive.local
+    api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+  tasks:
+    - name: COLLECT FLASHARRAY FACTS
+      purestorage.flasharray.purefa_info:
+        gather_subset:
+          - minimum
+        fa_url: "{{ url }}"
+        api_token: "{{ api }}"
+      register: array_facts
+
+    - name: DISPLAY COMPLETE FLASHARRAY MINIMUM INFORMATION
+      ansible.builtin.debug:
+        var: array_facts
+
+    - name: DISPLAY ONLY THE FLASHARRAY MODEL
+      ansible.builtin.debug:
+        var: array_facts['purefa_info']['default']['array_model']
+
+    - name: DISPLAY ONLY THE PURITY VERSION
+      ansible.builtin.debug:
+        var: array_facts['purefa_info']['default']['purity_version']
