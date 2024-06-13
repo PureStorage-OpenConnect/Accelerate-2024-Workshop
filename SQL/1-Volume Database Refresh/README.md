@@ -1,4 +1,4 @@
-# Volume Database Refresh
+# Lab - Volume Database Refresh
 
 Scenario: <br>
     Script will refresh a database on the target server from a source database on a separate server<br>

@@ -1,4 +1,4 @@
-# Point In Time Recovery - Using SQL Server 2022's T-SQL Snapshot Backup feature 
+# Lab - Point In Time Recovery - Using SQL Server 2022's T-SQL Snapshot Backup feature 
 
 # Scenario
 Perform a point in time restore using SQL Server 2022's T-SQL Snapshot Backup feature. This uses a FlashArray snapshot as the base of the restore, then restores a log backup.

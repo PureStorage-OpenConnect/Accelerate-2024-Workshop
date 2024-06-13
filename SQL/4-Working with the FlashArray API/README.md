@@ -1,4 +1,4 @@
-# Lab - Seeding an Availability Group - Using SQL Server 2022's T-SQL Snapshot Backup feature 
+# Lab - Working with the FlashArray API
 
 # Scenario
 Seeding an Availability Group (AG) from SQL Server 2022's T-SQL Snapshot Backup
