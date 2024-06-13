@@ -2,6 +2,18 @@
 Import-Module PureStoragePowerShellSDK2
 
 
+
+# Declare variables
+$SqlServerName         = 'Windows1'                                       # Name of target VM
+$ArrayName               = 'flasharray1.testdrive.local'                    # FlashArray FQDN
+
+
+
+# Build a persistent SMO connection to use throughout this demo.
+$SqlInstance = Connect-DbaInstance -SqlInstance $SqlServerName -TrustServerCertificate -NonPooledConnection
+
+
+
 # Build a credential to connect to our FlashArry
 $Passowrd = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Passowrd)
@@ -9,7 +21,7 @@ $Credential = New-Object System.Management.Automation.PSCredential ('pureuser', 
 
 
 # Connect and create a variable for reference
-$FlashArray = Connect-Pfa2Array -EndPoint sn1-x90r2-f06-33.puretec.purestorage.com -Credential $Credential -IgnoreCertificateError 
+$FlashArray = Connect-Pfa2Array -EndPoint $ArrayName -Credential $Credential -IgnoreCertificateError 
 
 
 
@@ -18,7 +30,7 @@ $FlashArray = Connect-Pfa2Array -EndPoint sn1-x90r2-f06-33.puretec.purestorage.c
 #######################################################################################################################################
 # Kick off a backup to generate some read workload
 Start-Job -ScriptBlock {
-    Backup-DbaDatabase -SqlInstance 'Windows1' -Database 'TPCC100' -Type Full -FilePath NUL 
+    Backup-DbaDatabase -SqlInstance $SqlInstance -Database 'TPCC100' -Type Full -FilePath NUL 
 }
 
 
@@ -47,27 +59,6 @@ $VolumePerformance |
 
 
 
-# Let's learn how to look back in time...
-# What's the default resolution for this sample...in other words how far back am I looking in the data available?
-# The default resolution on storage objects like Volumes is 30 seconds window starting when the cmdlet is run
-Get-Pfa2VolumePerformance -Array $FlashArray -Sort 'reads_per_sec-' -Limit 10 | 
-    Select-Object Name, Time, ReadsPerSec, BytesPerRead
-
-
-
-# This isn't just for volumes, hosts as well, the performance model exposed by the API
-# is the same for nearly all objects
-Get-Pfa2HostPerformance -Array $FlashArray -Sort 'reads_per_sec-' -Limit 10 `
-    -StartTime $StartTime -EndTime $EndTime -resolution 1800000 | 
-    Select-Object Name, Time, ReadsPerSec, BytesPerRead
-
-
-Get-Pfa2HostPerformance -Array $FlashArray -Sort 'writes_per_sec-' -Limit 10 `
-    -StartTime $StartTime -EndTime $EndTime -resolution 1800000 | 
-    Select-Object Name, Time, ReadsPerSec, WritesPerSec
-
-
-
 #######################################################################################################################################
 #  Key take aways: 
 #   1. You can easily find volume level performance information via PowerShell and also our API.
@@ -84,10 +75,10 @@ Get-Pfa2HostPerformance -Array $FlashArray -Sort 'writes_per_sec-' -Limit 10 `
 # * https://www.nocentino.com/posts/2023-01-25-using-flasharray-tags-powershell/ 
 
 # Let's get two sets of volumes using our filtering technique
-$VolumesSqlA = Get-Pfa2Volume -Array $FlashArray -Filter "name='*vvol-aen-sql-22-a*'" | 
+$VolumesSqlA = Get-Pfa2Volume -Array $FlashArray -Filter "name='*windows1*'" | 
     Select-Object Name -ExpandProperty Name
 
-$VolumesSqlB = Get-Pfa2Volume -Array $FlashArray -Filter "name='*vvol-aen-sql-22-b*'" | 
+$VolumesSqlB = Get-Pfa2Volume -Array $FlashArray -Filter "name='*windows2*'" | 
     Select-Object Name -ExpandProperty Name
 
 
@@ -102,10 +93,10 @@ $VolumesSqlB
 # A namespace is like a folder, a way to classify a subset of tags. 
 # A tag is a key/value pair that can be attached to an object in FlashArray, like a volume or a snapshot. 
 # Using tags enables you to attach additional metadata to objects for classification, sorting, and searching.
-$TagNamespace = 'AnthonyNamespace'
+$TagNamespace = 'YourNameNamespace'
 $TagKey = 'SqlInstance'
-$TagValueSqlA = 'aen-sql-22-a'
-$TagValueSqlB = 'aen-sql-22-b'
+$TagValueSqlA = 'Windows1'
+$TagValueSqlB = 'Windows2'
 
 
 
@@ -158,26 +149,26 @@ Remove-Pfa2VolumeTag -Array $FlashArray -Namespaces $TagNamespace -Keys $TagKey 
 #######################################################################################################################################
 # * https://support.purestorage.com/Solutions/Microsoft_Platform_Guide/a_Windows_PowerShell/How-To%3A_Working_with_Snapshots_and_the_Powershell_SDK_v2#Volume_Snapshots_2
 
-# Let's take a Protection Group Snapshot
-$PgSnapshot = New-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceNames 'aen-sql-22-a-pg' 
-$PgSnapshot
+# Let's take a Volume Snapshot
+$VolSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceNames 'Windows1Vol1' 
+$VolSnapshot
 
 
 
-# Let's take a look at ProtectionGroupSnapshot object model
-$PgSnapshot | Get-Member
+# Let's take a look at VolumeSnapshot object model
+$VolSnapshot | Get-Member
 
 
 
 # Using a snapshot suffix, take a PG Snapshot with a suffix
-$PgSnapshot = New-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceNames 'aen-sql-22-a-pg' -Suffix "DWCheckpoint1"
-$PgSnapshot
+$VolSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceNames 'Windows1Vol1' -Suffix "DWCheckpoint1"
+$VolSnapshot
 
 
 
 # Get a PG Snapshot by suffix
-Get-Pfa2ProtectionGroupSnapshot -Array $FlashArray | Where-Object { $_.Suffix -eq 'DWCheckpoint1'}
-Get-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceNames 'aen-sql-22-a-pg' -Filter "suffix='DWCheckpoint1'" 
+Get-Pfa2VolumeSnapshot -Array $FlashArray | Where-Object { $_.Suffix -eq 'DWCheckpoint1'}
+Get-Pfa2VolumeSnapshot -Array $FlashArray -SourceNames 'Windows1Vol1' -Filter "suffix='DWCheckpoint1'" 
 
 
 
@@ -196,30 +187,25 @@ Get-Pfa2VolumeSnapshot -Array $FlashArray -Filter "created<'$StringDate'" -Sort 
 
 
 
-#Similarly we can do this for protection groups 
-Get-Pfa2ProtectionGroupSnapshot -Array $FlashArray -Filter "created<'$StringDate'" -Sort "created" |
-    Select-Object Name, Created
-
-
 
 # Let's get a listing of PG snapshots older than 30 days    
-$PgSnapshots = Get-Pfa2ProtectionGroupSnapshot -Array $FlashArray -SourceName 'aen-sql-22-a-pg' 
-$PgSnapshots.Id
+$VolSnapshots = Get-Pfa2VolumeSnapshot -Array $FlashArray -Filter "created<'$StringDate'" -Sort "created"
+$VolSnapshots.Id
 
 
 
-# You can remove snapshots with these cmdlets
-#Remove-Pfa2VolumeSnapshot -Array $FlashArray -Id $PgSnapshots
+# You can remove snapshots with these cmdlets, pushes them into the eradication bucket with a 24 hour timer
+Remove-Pfa2VolumeSnapshot -Array $FlashArray -Id $VolSnapshots.Id 
 
 
 
-#We can remove as snapshot, but this places it in the eradication bucket rather than deleting it straigh away
-Remove-Pfa2ProtectionGroupSnapshot -Array $FlashArray -Name 'aen-sql-22-a-pg.DWCheckpoint1' 
+# Let's get a listing of all snapshots, you'll see that snapshots older than 30 days are now "Destroyed" is now True and TimeRemaining is now set to a value.
+Get-Pfa2VolumeSnapshot -Array $FlashArray  | Format-Table
 
 
 
-#If you want to delete the snapshot right now, you can add the Eradicate parameter
-Remove-Pfa2ProtectionGroupSnapshot -Array $FlashArray -Name 'aen-sql-22-a-pg.DWCheckpoint1' -Eradicate -whatif
+#We can remove as snapshot, but this places it in the eradication bucket rather than deleting it straight away
+Remove-Pfa2VolumeSnapshot -Array $FlashArray -Name 'Windows1Vol1.DWCheckpoint1' 
 
 
 

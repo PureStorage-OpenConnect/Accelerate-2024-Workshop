@@ -16,7 +16,9 @@
 #    infrastructure.
 ##############################################################################################################################
 
-
+# Import powershell modules
+Import-Module dbatools
+Import-Module PureStoragePowerShellSDK2
 
 
 # Let's initalize some variables we'll use for connections to our SQL Server and it's base OS
@@ -30,7 +32,7 @@ $TargetDisk      = 'B64D29B183714E0600012395'         # The serial number if the
 
 
 
-# Build a persistent SMO connection, you can ignore the warning thrown.
+# Build a persistent SMO connection.
 $SqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
 
 
@@ -40,9 +42,11 @@ Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName |
   Select-Object Name, SizeMB
 
 
+
 # Set credential to connect to FlashArray, username pureuser, password testdrive
 $Passowrd = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Passowrd)
+
 
 
 # Connect to the FlashArray's REST API
@@ -63,11 +67,10 @@ $Snapshot
 
 
 # Take a metadata backup of the database, this will automatically unfreeze if successful
-# We'll use MEDIADESCRIPTION to hold some information about our snapshot and the flasharray its held on
-$BackupFile = "$BackupShare\$DbName_$(Get-Date -Format FileDateTime).bkm"
+$BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
 $Query = "BACKUP DATABASE $DbName 
           TO DISK='$BackupFile' 
-          WITH METADATA_ONLY, MEDIADESCRIPTION='$($Snapshot.Name)|$($FlashArray.ArrayName)'"
+          WITH METADATA_ONLY"
 Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
 
@@ -105,30 +108,13 @@ Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName |
 
 
 
-# Offline the database, which we'd have to do anyway if we were restoring a full backup
-$Query = "ALTER DATABASE $DbName SET OFFLINE WITH ROLLBACK IMMEDIATE" 
-Invoke-DbaQuery -SqlInstance $SqlInstance -Database master -Query $Query
-
-
-
 # Offline the volume
 Get-Disk | Where-Object { $_.SerialNumber -eq $TargetDisk } | Set-Disk -IsOffline $True 
 
 
 
-# We can get the snapshot name from the $Snapshot variable above, but what if we didn't know this ahead of time?
-# We can also get the snapshot name from the MEDIADESCRIPTION in the backup file. 
-$Query = "RESTORE LABELONLY FROM DISK = '$BackupFile'"
-$Labels = Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
-$SnapshotName = (($Labels | Select-Object MediaDescription -ExpandProperty MediaDescription).Split('|'))[0]
-$ArrayName = (($Labels | Select-Object MediaDescription -ExpandProperty MediaDescription).Split('|'))[1]
-$SnapshotName
-$ArrayName
-
-
-
 # Restore the snapshot over the volume
-New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($SnapshotName) -Overwrite $true
+New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($Snapshot.Name) -Overwrite $true
 
 
 
@@ -184,10 +170,10 @@ $Snapshot
 
 #Take a metadata backup of the database, this will automatically unfreeze if successful
 #We'll use MEDIADESCRIPTION to hold some information about our snapshot
-$BackupFile = "$BackupShare\$DbName_$(Get-Date -Format FileDateTime).bkm"
+$BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
 $Query = "BACKUP DATABASE $DbName 
           TO DISK='$BackupFile' 
-          WITH METADATA_ONLY, MEDIADESCRIPTION='$($Snapshot.Name)|$($FlashArray.ArrayName)'"
+          WITH METADATA_ONLY"
 Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 $Stop = (Get-Date)
 

@@ -63,18 +63,16 @@ Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 $SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
 
 
-
 # Take a metadata backup of the database, this will automatically unfreeze if successful
-# We'll use MEDIADESCRIPTION to hold some information about our snapshot
 $BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
 $Query = "BACKUP DATABASE $DbName 
           TO DISK='$BackupFile' 
-          WITH METADATA_ONLY, MEDIADESCRIPTION='$($SourceSnapshot.Name)|$($FlashArrayPrimary.ArrayName)'"
+          WITH METADATA_ONLY"
 Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 
 
 
-# Offline the databases on the Secondary Replica
+# Offline the database on the Secondary Replica
 $Query = "ALTER DATABASE [$DbName] SET OFFLINE WITH ROLLBACK IMMEDIATE"
 Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query
 
@@ -114,11 +112,6 @@ Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Quer
 
 
 
-
-
-
-
-
 #Now create a new certificate on Windows1, backup the certificate on Windows1 and restore it to Windows2
 New-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Name ag_cert -Subject ag_cert -StartDate (Get-Date) -ExpirationDate (Get-Date).AddYears(10) -Confirm:$false
 Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -Path $BackupShare -EncryptionPassword $Credential.Password -Confirm:$false
@@ -126,8 +119,6 @@ Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -P
 
 $Certificate = (Get-DbaFile -SqlInstance $SqlInstancePrimary -Path $BackupShare -FileType cer).FileName
 Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -DecryptionPassword $Credential.Password -Confirm:$false
-
-
 
 
 
@@ -157,9 +148,6 @@ New-DbaAvailabilityGroup `
 
 # Now let's check the status of the AG...check to see if the SynchronizationState is Synchronized
 Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName 
-
-
-
 
 
 

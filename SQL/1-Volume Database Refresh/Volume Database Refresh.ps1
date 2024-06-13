@@ -24,19 +24,9 @@
 #
 ##############################################################################################################################
 
-
-
-# Install the required PowerShell module, click yes to all for the popups regarding installation.
-# Click Yes and tyen 'yes to all' for the popups regarding installation. 
-# dbatools in not required but makes the workflow easier
-Install-Module PureStoragePowerShellSDK2, dbatools
-
-
-
-##
-# Open SQL Server Management Studio on the desktop and connect to Windows1 and Windows2
-##
-
+# Import powershell modules
+Import-Module dbatools
+Import-Module PureStoragePowerShellSDK2
 
 
 # Declare variables
@@ -48,9 +38,16 @@ $SourceVolumeName        = 'Windows1Vol1'                                   # So
 $TargetVolumeName        = 'Windows2Vol1'                                   # Target volume name on FlashArray
 
 
-# Build a persistent SMO connection, you can ignore the warning thrown.
+
+# Build a persistent SMO connection to use throughout this demo.
 $SourceSqlInstance = Connect-DbaInstance -SqlInstance $SourceSqlServer -TrustServerCertificate -NonPooledConnection
 $TargetSqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
+
+
+
+# Let's check out the size of the database we're going to clone, 12GB...the cloning operation is instant, regardless of databases size, 12KB or 12TB will take just as long.
+Get-DbaDatabase -SqlInstance $SourceSqlInstance -Database 'TPCC100' |
+  Select-Object Name, SizeMB
 
 
 
@@ -97,11 +94,9 @@ Invoke-DbaQuery -SqlInstance $TargetSqlInstance -Database master -Query $Query
 
 
 
-## Check out the newly cloned database on Window2
-#  1. Go back to SQL Server Management Studio and 
-#  2. Refresh the listing of databases on Windows2 by expanding the Server Name, then Databases, then right click Refresh on the Databases 
-##
-
+# Check out the clone on the Target Sql Instance, Windows2. We cloned the database instantly between two instances of SQL Server
+Get-DbaDatabase -SqlInstance $TargetSqlInstance -Database 'TPCC100' |
+  Select-Object Name, SizeMB
 
 
 # Clean up
