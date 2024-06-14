@@ -1,3 +1,5 @@
 # Accelerate 2024 Workshop Materials
 
-The material in this repository is intended for use during Pure Accelerate 2024, specifically the Workshop session.
+![Accelerate 2024](/img/accelerate-2024-white.png)
+
+## The materials in this repository are intended for use during the Pure Accelerate 2024 Automation Workshop session.
