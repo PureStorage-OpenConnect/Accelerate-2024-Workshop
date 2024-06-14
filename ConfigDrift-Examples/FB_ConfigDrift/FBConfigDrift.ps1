@@ -10,8 +10,8 @@
 #    Also an option parameter to simulate opening an incident ticke
 #
 # Example Calls:
-#    ./FBConfigDrift.ps1 -mode "plan"
-#    ./FBConfigDrift.ps1 -mode "apply" -openincident $true
+#    C:\Workshop\FB_Configdrift\FBConfigDrift.ps1 -mode "plan"
+#    C:\Workshop\FB_Configdrift\FBConfigDrift.ps1 -mode "apply" -openincident $true
 #
 # Other Notes:
 #    Created by Cody Mautner in Pure Professional Services as an oversimplified version of configuration drift.  To account for all settings and to have an enterprise solution

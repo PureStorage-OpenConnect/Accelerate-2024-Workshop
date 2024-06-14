@@ -8,6 +8,10 @@ This guide will walk you through understanding the configuration file, adding ad
 
 We even have a few challenges for you to enhance the solution further.
 
+#### Before you start
+
+You will need to login to the FlashBlade and generate a new API token for the pureuser account, and paste it into your FBArrayConfig.json
+
 
 #### 1. Understanding the Configuration File
 
