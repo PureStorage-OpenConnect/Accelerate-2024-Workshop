@@ -1,13 +1,5 @@
 # Exercise 2.1 - Configuring FlashArray Networking
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-
 # Objective
 
 Demonstrate the use of the [purefa_network module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_network_module.html) to configure netowrk interfaces on a Pure Storage FlashArray.
@@ -73,15 +65,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-network.yml
+$ ansible-playbook purefa-network.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-network.yml
+$ ansible-playbook purefa-network.yml
 
 PLAY [NETWORKING] **i****************************************************************************************************
 
@@ -95,12 +85,8 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-network.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.1-networking/purefa-network.yml).
-
 # Verifying the Solution
 
-Login to the source Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the source Pure Storage FlashArray with your web browser.
 
 Navigate to the Settings -> Network window and look in the Ethernet sub-window for the interface you configured..

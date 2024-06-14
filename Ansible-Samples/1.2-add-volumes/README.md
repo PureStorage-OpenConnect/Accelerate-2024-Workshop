@@ -1,13 +1,5 @@
 # Exercise 1.2 - Adding volumes to a FlashArray
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-
 # Objective
 
 Demonstrate the use of the [purefa_volume module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_volume_module.html) to add a host to a Pure Storage FlashArray.
@@ -74,15 +66,15 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-volume.yml
+$ ansible-playbook purefa-volume.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
+The output will look something like this.
 
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-volume.yml
+$ ansible-playbook purefa-volume.yml
 
 PLAY [VOLUME SETUP] *****************************************************************************************************
 
@@ -98,12 +90,8 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-volume.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/1.2-add-volumes/purefa-volume.yml).
-
 # Verifying the Solution
 
-Login to the Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the Pure Storage FlashArray with your web browser.
 
-The list of volumes configured in the array can be found by navigating the menu on the left to Storage, then selecting the top menu item Volumes.![volumes](volumes.png)
+The list of volumes configured in the array can be found by navigating the menu on the left to Storage, then selecting the top menu item Volumes.

@@ -1,14 +1,5 @@
 # Exercise 1.3 - Connecting volumes to a host on a FlashArray
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-- [Going Futher](#going-further)
-
 # Objective
 
 Demonstrate the use of the [purefa_host module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_host_module.html) to connect an existing volume to a host on a Pure Storage FlashArray.
@@ -71,15 +62,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-connect.yml
+$ ansible-playbook purefa-connect.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-volume.yml
+$ ansible-playbook purefa-volume.yml
 
 PLAY [CONNECT SETUP] ****************************************************************************************************
 
@@ -93,13 +82,9 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-connect.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/1.3-connect-volumes/purefa-connect.yml).
-
 # Verifying the Solution
 
-Login to the Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the Pure Storage FlashArray with your web browser.
 
 Navigating using the menu on the left to Storage, then select Hosts top menu, finally select the host object you have created in the Hosts sub-window. This will show the volume connected to the host and the LUN ID assigned to the volume.![connections](connections.png)
 
@@ -147,9 +132,7 @@ Note that if using RHEL or CentOS the `scsi-rescan` command will need to be repl
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-connect.yml
+$ ansible-playbook purefa-connect.yml
 ```
 
 and then execute the command `mount /workshop-mount`.
-
-The complete bonus Ansible Playbook is provided here: [purefa-connect-bonus.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/1.3-connect-volumes/purefa-connect-bonus.yml).

@@ -1,14 +1,5 @@
 # Exercise 2.2 - Configure ActiveCluster pods
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-- [Going Further](#going-further)
-
 # Objective
 
 Demonstrate the use of the [purefa_pod module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_pod_module.html) to create an ActiveCluster replication pod and then stretch that pod across two connected FlashArrays.
@@ -76,15 +67,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-pod.yml
+$ ansible-playbook purefa-pod.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-pod.yml
+$ ansible-playbook purefa-pod.yml
 
 PLAY [ACTIVECLUSTER POD] ************************************************************************************************
 
@@ -101,13 +90,9 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-pod.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.2-pods/purefa-pod.yml).
-
 # Verifying the Solution
 
-Login to the source Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the source Pure Storage FlashArray with your web browser.
 
 Navigate to the Storage -> Pods window to see the array connections that have been created from the source side of the connections.
 
@@ -144,5 +129,3 @@ Replace the second task in your YAML file, the pod stretch task, with the follow
         fa_url: "{{ url }}"
         api_token: "{{ api }}"
 ```
-
-The complete bonus playbook is provided here: [purefa-pod-bonus.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.2-pods/purefa-pod-bonus.yml)

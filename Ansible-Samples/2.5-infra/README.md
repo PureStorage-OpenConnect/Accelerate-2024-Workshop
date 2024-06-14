@@ -1,14 +1,5 @@
 # Exercise 2.5 - Configuring common infrastructire settings on a FlashArray
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-- [Going Further](#going-further)
-
 # Objective
 
 Demonstrate the use of multiple FlashArray modules to configure common infrastructure settings on a FlashArray.
@@ -89,15 +80,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-infra.yml
+$ ansible-playbook purefa-infra.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-infra.yml
+$ ansible-playbook purefa-infra.yml
 
 PLAY [INFRASTRUCTURE SETTINGS] ******************************************************************************************
 
@@ -117,13 +106,9 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-infra.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.5-infra/purefa-infra.yml).
-
 # Verifying the Solution
 
-Login to the source Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the source Pure Storage FlashArray with your web browser.
 
 Navigate to the Settings -> System window to see the array configuration. There are sub-windows specifically for Array Time, where the NTP servers are listed, and Syslog Servers.
 
@@ -132,5 +117,3 @@ To see the DNS domain and nameserver settings navigate to Settings -> Network pa
 # Going Further
 
 Configuring the infrastructure settings is only the tip of the iceberg for FlashArray. Using these and other infrastructure related modules for the FlashArray you can build very complex playbooks to configure and maintain your critical configurations.
-
-For more details on this control, also referred to as Drift control, you can check out this [blog post](http://theansibleguy.com/manage-drift-with-ansible/) that describes in greater detail the methodology and utilises the concept of Ansible 'roles'.

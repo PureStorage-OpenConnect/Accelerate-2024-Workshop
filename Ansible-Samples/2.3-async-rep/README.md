@@ -1,14 +1,5 @@
 # Exercise 2.2 - Configure asynchronous replication
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-- [Going Further](#going-further)
-
 # Objective
 
 Demonstrate the use of the [purefa_pg module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_pg_module.html) to configure the Protection Group created in [Exercise 1.4](https://github.com/PureStorage-OpenConnect/ansible-flasharray-workshop/blob/master/1.4-pgroup) to replicate to the array connected in [Exercise 2.0](https://github.com/PureStorage-OpenConnect/ansible-flasharray-workshop/blob/master/2.0-connect-arrays).
@@ -70,15 +61,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-async.yml
+$ ansible-playbook purefa-async.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-async.yml
+$ ansible-playbook purefa-async.yml
 
 PLAY [ASYNC SETUP] ******************************************************************************************************
 
@@ -92,13 +81,9 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-async.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.3-async-rep/purefa-async.yml).
-
 # Verifying the Solution
 
-Login to the source Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the source Pure Storage FlashArray with your web browser.
 
 Navigate to the Protection -> Protection Groups window and select the Source Protection Group `workshop-pg` to see the target array has been configured.
 
@@ -133,5 +118,3 @@ Replace the task in your YAML file, with the following:
         fa_url: "{{ url }}"
         api_token: "{{ api }}"
 ```
-
-The complete bonus playbook is provided here: [purefa-async-bonus.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.3-async-rep/purefa-async-bonus.yml)

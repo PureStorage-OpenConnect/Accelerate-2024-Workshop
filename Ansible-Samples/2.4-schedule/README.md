@@ -1,14 +1,5 @@
 # Exercise 2.4 - Configuring FlashArray replication schedules
 
-## Table of Contents
-
-- [Objective](#objective)
-- [Guide](#guide)
-- [Playbook Output](#playbook-outbook)
-- [Solution](#solution)
-- [Verifying the Solution](#verifying-the-solution)
-- [Going Further](#going-further)
-
 # Objective
 
 Demonstrate the use of the [purefa_pgsched module](https://docs.ansible.com/ansible/latest/collections/purestorage/flasharray/purefa_pgsched_module.html) to manage the local snapshot and replication schedules for a protection group.
@@ -44,7 +35,7 @@ Enter the following play definition into `purefa-sched.yml`:
 
 ## Step 3:
 
-Next, add the following `tasks` to the playbook. These tasks will use the `purefa_pgsched` module to configure the local snapshot and replication schedules for protection group created in [Exercise 1.4](https://github.com/PureStorage-OpenConnect/ansible-flasharray-workshop/tree/master/1.4-pgroup).
+Next, add the following `tasks` to the playbook. These tasks will use the `purefa_pgsched` module to configure the local snapshot and replication schedules for protection group created in Exercise 1.4.
 
 ```yaml
 tasks:
@@ -96,15 +87,13 @@ Save the file and exit out of the editor.
 Run the playbook - Execute the following:
 
 ```
-[student1@ansible ~]$ ansible-playbook purefa-sched.yml
+$ ansible-playbook purefa-sched.yml
 ```
 
 # Playbook Output
 
-The output will look as follows.
-
 ```yaml
-[student1@ansible ~]$ ansible-playbook purefa-sched.yml
+$ ansible-playbook purefa-sched.yml
 
 PLAY [PROTECTION GROUP SCHEDULING] **************************************************************************************
 
@@ -121,13 +110,9 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-# Solution
-
-The finished Ansible Playbook is provided here: [purefa-sched.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.4-schedule/purefa-sched.yml).
-
 # Verifying the Solution
 
-Login to the source Pure Storage FlashArray with your web browser using the management IP address you set in your YAML file.
+Login to the source Pure Storage FlashArray with your web browser.
 
 Navigate to the Protection -> Protection Groups window and select the `workshop-pg` group to see the two replication schedule configurations.
 
@@ -148,5 +133,3 @@ Replication schedules can have blackout periods assigned to them to stop replica
         fa_url: "{{ url }}"
         api_token: "{{ api }}"
 ```
-
-The complete bonus playbook is provided here: [purefa-sched-bonus.yml](https://github.com/PureStorage-OpenConnect/ansible-workshop/blob/master/2.4-schedule/purefa-sched-bonus.yml)
