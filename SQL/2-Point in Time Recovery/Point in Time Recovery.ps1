@@ -20,6 +20,10 @@
 Import-Module dbatools
 Import-Module PureStoragePowerShellSDK2
 
+##############################################################################################################################
+## 1 - Setting up the enviroment - Here you'll define some variables and make a SQL Server connections and connect to your FlashArray, get some database information
+#
+
 
 # Let's initalize some variables we'll use for connections to our SQL Server and it's base OS
 $TargetSQLServer = 'Windows1'                         # SQL Server Name
@@ -28,18 +32,6 @@ $DbName          = 'TPCC100'                          # Name of database
 $BackupShare     = '\\Windows2\backup'                # File system location to write the backup metadata file
 $FlashArrayDbVol = 'Windows1Vol1'                     # Volume name on FlashArray containing database files
 $TargetDisk      = 'B64D29B183714E0600012395'         # The serial number if the Windows volume containing database files
-
-
-
-
-# Build a persistent SMO connection.
-$SqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
-
-
-
-# Let's get some information about our database, take note of the size
-Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName |
-  Select-Object Name, SizeMB
 
 
 
@@ -54,7 +46,26 @@ $FlashArray = Connect-Pfa2Array -EndPoint $ArrayName -Credential $Credential -Ig
 
 
 
+# Build a persistent SMO connection.
+$SqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
+
+
+
+# Let's get some information about our database, take note of the size, 12GB again.
+Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName |
+  Select-Object Name, SizeMB
+
+##############################################################################################################################
+
+
+##############################################################################################################################
+## 2 - Taking an application consistent backup with SQL Server 2022's T-SQL-based snapshot feature.
+##
+
+
 # Let's use the new SQL Server 2022 TSQL-based snapshot to take an application consistent snapshot with no external tools!
+# This code will freeze the database until we take the backup on line 81.
+# Once you execute this code, the verbose output will report to you that the database is frozen.
 $Query = "ALTER DATABASE $DbName SET SUSPEND_FOR_SNAPSHOT_BACKUP = ON"
 Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
@@ -66,33 +77,36 @@ $Snapshot
 
 
 
-# Take a metadata backup of the database, this will automatically unfreeze if successful
+# Take a metadata backup of the database, this will automatically unfreeze if successful.
+# Since the backup is snapshot based, you will see that 0 pages have been backed up. This is normal.
+# This command generates a small backup file in \\Windows2\backup which describes what's in the snapshot.
 $BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
 $Query = "BACKUP DATABASE $DbName 
           TO DISK='$BackupFile' 
           WITH METADATA_ONLY"
 Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
+##############################################################################################################################
 
 
-# Let's check out the error log to see what SQL Server thinks happened
+
+##############################################################################################################################
+## 3 - Examine the backup history according to SQL Server, check the error log and the backup history
+##
+
+
+# Let's check out the error log to see what SQL Server thinks happened, looking at the last line 
+# you should see the string 'BACKUP DATABASE successfully processed 0 pages in 0.009 seconds (0.000 MB/sec).... ' indicating a successful backup
 Get-DbaErrorLog -SqlInstance $SqlInstance -LogNumber 0 | Format-Table
 
 
 
-# The backup is recorded in MSDB as a Full backup with snapshot
-$BackupHistory = Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Last
-$BackupHistory
+# The backup is recorded in MSDB as a Full backup with snapshot, this backup time should be a few seconds ago
+Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -LastFull
 
 
 
-# Let's explore the stuff in the backup header...
-# Remember, VDI is just a contract saying what's in the backup matches what SQL Server thinks is in the backup.
-Read-DbaBackupHeader -SqlInstance $SqlInstance -Path $BackupFile
-
-
-
-# Let's take a log backup
+# Now that we have a snapshot as a full backup, let's take a log backup
 $LogBackup = Backup-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Type Log -Path $BackupShare -CompressBackup
 
 
@@ -102,13 +116,24 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Database $DbName -Query "DROP TABLE c
 
 
 
-# Let's check out the state of the database, size, last full and last log
-Get-DbaDatabase -SqlInstance $SqlInstance -Database $DbName | 
-  Select-Object Name, Size, LastFullBackup, LastLogBackup
+# Looking at the backup history we see the full backup (snapshot) and the log backup we just took
+Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Since (Get-Date).AddDays(-1)
+
+##############################################################################################################################
+
+
+##############################################################################################################################
+## 4 - Performing a point in time restore using snapshot backup
+##
+
+
+# Offline the database, which we'd have to do anyway if we were restoring a full backup
+$Query = "ALTER DATABASE $DbName SET OFFLINE WITH ROLLBACK IMMEDIATE" 
+Invoke-DbaQuery -SqlInstance $SqlInstance -Database master -Query $Query
 
 
 
-# Offline the volume
+# Offline the volume that our database is on
 Get-Disk | Where-Object { $_.SerialNumber -eq $TargetDisk } | Set-Disk -IsOffline $True 
 
 
@@ -134,7 +159,7 @@ Get-DbaDbState -SqlInstance $SqlInstance -Database $DbName
 
 
 
-# Restore the log backup.
+# Restore the log backup. This is a regular native transaction log backup that we took earlier in the lab
 Restore-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Path $LogBackup.BackupPath -NoRecovery -Continue
 
 
@@ -149,36 +174,6 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Database master -Query $Query
 # whew...we don't have to tell anybody since our restore was so fast :P 
 Get-DbaDbTable -SqlInstance $SqlInstance -Database $DbName -Table 'Customer' | Format-Table
 
-
-
-# How long does this process take, this demo usually takes 450ms? 
-$Start = (Get-Date)
-
-
-
-# Freeze the database
-$Query = "ALTER DATABASE $DbName SET SUSPEND_FOR_SNAPSHOT_BACKUP = ON"
-Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
-
-
-
-#Take a snapshot of the Protection Group while the database is frozen
-$Snapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $FlashArrayDbVol 
-$Snapshot
-
-
-
-#Take a metadata backup of the database, this will automatically unfreeze if successful
-#We'll use MEDIADESCRIPTION to hold some information about our snapshot
-$BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
-$Query = "BACKUP DATABASE $DbName 
-          TO DISK='$BackupFile' 
-          WITH METADATA_ONLY"
-Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
-$Stop = (Get-Date)
-
-
-
-Write-Output "The snapshot time takes...$(($Stop - $Start).Milliseconds)ms!"
-
-# When you are finished, move on to demo 3 - Click File->Open->.\Accelerate-2024-Workshop-main\SQL\3-Seeding an Availability Group
+##############################################################################################################################
+## When you are finished, move on to demo 3 - Click File->Open->.\Accelerate-2024-Workshop-main\SQL\3-Seeding an Availability Group
+##
