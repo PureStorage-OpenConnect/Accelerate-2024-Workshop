@@ -10,7 +10,10 @@ The Icons below will take you to the login page for the Pure Test Drives. You wi
 
 You may continue to use the labs after Accelerate 2024 by signing up for a free account at [Pure Test Drive](https://www.purestorage.com/products/flasharray-x/test-drive.html) and obtaining a voucher from your Account Team.
 
+### FlashArray and FlashBlade Configuration Drift  
 [![FA-FB-Config-Drift](/img/fa-fb-config-drift.png)](https://testdrive.purestorage.com/voucher/hKCyOFGGGlrDiPeT7j9TWBtlcP4)  
+### SQL Server Innovations on Pure Storage  
 [![SQL](/img/sql.png)](https://testdrive.purestorage.com/voucher/mllhAPkDl8zt7EEbYFpfHWxEcw)  
+### Ansible Automation with FlashArray  
 [![Automating FlashArray with Ansible](/img/ansible-fa.png)](https://testdrive.purestorage.com/voucher/qM92SOvg9uS002t8iY3Dr0k9JM)  
 
