@@ -110,14 +110,13 @@ Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -LastFull
 $LogBackup = Backup-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Type Log -Path $BackupShare -CompressBackup
 
 
+# Looking at the backup history we see the full backup (snapshot) and the log backup we just took
+Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Since (Get-Date).AddDays(-1)
+
+
 
 # Delete a table...I should update my resume, right? :P 
 Invoke-DbaQuery -SqlInstance $SqlInstance -Database $DbName -Query "DROP TABLE customer"
-
-
-
-# Looking at the backup history we see the full backup (snapshot) and the log backup we just took
-Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Since (Get-Date).AddDays(-1)
 
 ##############################################################################################################################
 
