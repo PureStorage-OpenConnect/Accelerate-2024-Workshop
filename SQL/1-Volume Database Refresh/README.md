@@ -16,11 +16,50 @@ Here is a description of the major activities in this lab:
 In this section of code you are defining key parameters and variables for reuse throughout the script.
 
 1. **Define variables:** for source and target SQL servers, FlashArray FQDN, target disk serial number, source volume name, and target volume name. 
-1. **Set credentials** for connecting to FlashArray.
+
+    ```
+    $SourceSqlServer         = 'Windows1'                                       # Name of source VM
+    $TargetSqlServer         = 'Windows2'                                       # Name of target VM
+    $ArrayName               = 'flasharray1.testdrive.local'                    # FlashArray FQDN
+    $TargetDiskSerialNumber  = 'B64D29B183714E0600012396'                       # Target Disk Serial Number
+    $SourceVolumeName        = 'Windows1Vol1'                                   # Source volume name on FlashArray
+    $TargetVolumeName        = 'Windows2Vol1'                                   # Target volume name on FlashArray
+    ```
+
+1. **Set credentials** for connecting to FlashArray. Set credential to connect to FlashArray, username `pureuser`, password `testdrive`
+
+    ```
+    $Password = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Password)
+    ```
+
 1. **SQL Server Connection:** Build a persistent SMO connection to the SQL Server instance.
+
+    ```
+    $SourceSqlInstance = Connect-DbaInstance -SqlInstance $SourceSqlServer -TrustServerCertificate -NonPooledConnection
+    $TargetSqlInstance = Connect-DbaInstance -SqlInstance $TargetSQLServer -TrustServerCertificate -NonPooledConnection
+    ```
+
 1. **Create Remoting Session**: Create a PowerShell Remoting session to the target server (Windows2).
-1. **Database Information:** Retrieve and display the size of database to be cloned (TPCC100)
+
+```
+$TargetSession = New-PSSession -ComputerName $TargetSqlServer
+```
+
+1. **Database Information:** Retrieve and display the size of database to be cloned (TPCC100). Let's check out the size of the database we're going to clone, 12GB...the cloning operation is instant, regardless of databases size, 12KB or 12TB will take just as long.
+
+    ```
+    Get-DbaDatabase -SqlInstance $SourceSqlInstance -Database 'TPCC100' |
+    Select-Object Name, SizeMB
+    ```
+
 ## Volume Cloning Process:
+
+
+
+
+
+
 
 In this section of code you are cloning a volume and presenting it to a second Windows server and attaching the database.
 
