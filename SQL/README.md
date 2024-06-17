@@ -82,4 +82,4 @@ This Workshop expects you to understand the following:
 
 # Next Steps
 
-Next, Continue to [1 - Volume Database Refresh](./1-Volume%20Database%20Refresh/Volume%20Database%20Refresh.ps1)
+Next, Continue to [1 - Volume Database Refresh](./1-Volume%20Database%20Refresh/README.md)
