@@ -57,10 +57,13 @@ In this activity, you initialized an availability group using TSQL-based snapsho
 
 There's one nuance I want to call out here in this activity. This all happened on one array in our test lab. You will likely want your availability group replicas on separate arrays in a production environment. If you want to dive into the details of that, check out the post in the More Resources section below.
 
+Futher, if you want to deep dive into many more SQL Server use-cases on FlashArray Check out our team's script reposistory at [Pure Storage OpenConnect SQL Server Scripts](https://github.com/PureStorage-OpenConnect/sqlserver-scripts/)
+
 <br />
 <br />
 
 
 # More Resources
 - [Seeding an Availability Group Replica from Snapshot](https://www.nocentino.com/posts/2022-05-26-seed-ag-replica-from-snapshot/)
+- [Pure Storage OpenConnect SQL Server Scripts](https://github.com/PureStorage-OpenConnect/sqlserver-scripts/)
 
