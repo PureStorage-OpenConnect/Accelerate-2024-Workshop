@@ -47,7 +47,7 @@ The Workshop includes the following technologies, which form the basis of the Wo
 | Pure Storage FlashArray       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
 
 
-In this lab, you have two Windows Servers, each with SQL Server 2022 installed. Each server has one 20GB volume attached via iSCSI from FlashArray1. This volume is presented to the operating system as `Disk 1` and is mounted as the Drive `D:\`.
+In this lab, you have two Windows Servers, each with SQL Server 2022 installed. Each server has one 20GB volume attached via iSCSI from FlashArray1. This volume is presented to the operating system as `Disk 1` and is mounted as the Drive `D:\`. These are used in all activities in these labs.
 
 | Resource      | FlashArray Volume Name | Windows Disk Number | Windows Drive Letter
 | -----------   |  ----  |  :----: |  :----:  |

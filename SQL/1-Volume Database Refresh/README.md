@@ -1,6 +1,13 @@
 # Lab 1 - Volume Database Refresh
 
-In this lab, you will learn how to use array-based volume snapshots to decouple the time it takes to perform DBA operations from the size of the data. You will clone a database on Windows1 and present it to a another instance SQL Server instance on Windows2
+## Introduction.
+
+In this lab, you will clone a volume from **Windows1** to **Windows2** in this activity. You will replace the contents of the volume on the target instance, **Windows2**, with the contents of the clone from **Windows1** which contains the `TPCC100` database. This replaces the need to back up and restore the database. 
+
+Since this operation is inside the array, it happens nearly instantaneously. Another benefit is when you clone a volume and present it to another host, the volume does not consume additional space until data starts changing. When data does start changing, the changed blocks are tracked and exposed as a performance metric on the FlashArray Web Interface Dashboard and Array Capacity panel.
+
+Each section of line of code is intended to be executed sequentially to facilitate understanding, discovery and learning.
+
 
 Here is a description of the major activities in this lab:
 
@@ -8,12 +15,11 @@ Here is a description of the major activities in this lab:
 
 In this section of code you are defining key parameters and variables for reuse throughout the script.
 
-1. Define variables for source and target SQL servers, FlashArray FQDN, target disk serial number, source volume name, and target volume name. 
-1. Set credentials for connecting to FlashArray.
-1. Establish persistent SMO connections to the source and target SQL instances.
-1. Create a PowerShell session to the target server (Windows2).
-1. Check the size of the database to be cloned (TPCC100).
-
+1. **Define variables:** for source and target SQL servers, FlashArray FQDN, target disk serial number, source volume name, and target volume name. 
+1. **Set credentials** for connecting to FlashArray.
+1. **SQL Server Connection:** Build a persistent SMO connection to the SQL Server instance.
+1. **Create Remoting Session**: Create a PowerShell Remoting session to the target server (Windows2).
+1. **Database Information:** Retrieve and display the size of database to be cloned (TPCC100)
 ## Volume Cloning Process:
 
 In this section of code you are cloning a volume and presenting it to a second Windows server and attaching the database.
