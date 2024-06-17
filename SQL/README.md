@@ -1,5 +1,9 @@
 # Accelerate 2024 Workshop - SQL Server Innovations on Pure Storage
 
+<p align="center">
+![Accelerate 2024 - SQL Server Innovations on Pure Storage](/img/sql.png)
+</p>
+
 # About this Workshop
 
 Welcome to this Microsoft Solutions workshop on Modern Storage Platforms for SQL Server. In this Workshop, you will learn how to make the most of a modern storage platform for SQL Server. You will learn storage fundamentals and how to leverage snapshots, enabling you to dramatically reduce the time it takes data to move between SQL Server instances.
