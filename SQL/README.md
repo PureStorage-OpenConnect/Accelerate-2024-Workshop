@@ -42,9 +42,9 @@ The Workshop includes the following technologies, which form the basis of the Wo
 | Syntax      | Description |
 | ----------- | ----------- |
 | Microsoft Windows Operating System     | This Workshop uses the Microsoft Windows operating system |
-| Microsoft SQL Server 2022      | In this Workshop, you will protect, copy, clone, and build high-availability databases on SQL Server |
+| [Microsoft SQL Server 2022](https://www.microsoft.com/en-us/sql-server/sql-server-2022)      | In this Workshop, you will protect, copy, clone, and build high-availability databases on SQL Server |
 | [Transact-SQL snapshot backup](https://learn.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16)  | A new SQL Server 2022 feature that provides application consistent snapshots integrated directly into SQL Server
-| Pure Storage FlashArray       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
+| [Pure Storage FlashArray](https://www.purestorage.com/products.html)       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
 
 <br />
 
