@@ -1,7 +1,9 @@
 # Accelerate 2024 Workshop - SQL Server Innovations on Pure Storage
 
 <p align="center">
+
 ![Accelerate 2024 - SQL Server Innovations on Pure Storage](/img/sql.png)
+
 </p>
 
 # About this Workshop
