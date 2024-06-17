@@ -9,9 +9,8 @@
   tasks:
     - name: CREATE ASYNC CONNECTION
       purestorage.flasharray.purefa_connect:
-        name: ct0.eth8
-        gateway: 10.34.56.1
-        address: "10.34.56.23/24"
+        name: ct0.eth4
+        address: "172.16.0.0/24"
         mtu: 9000
         fa_url: "{{ url }}"
         api_token: "{{ api }}"

@@ -34,5 +34,9 @@ localhost                  : ok=2    changed=1    unreachable=0    failed=0    s
 # Verifying the Solution
 
 On the Windows host, open a browser and navigate to the Pure Storage FlashArray management interface by clicking on the "flasharray1" shortcut.
-Login as the "workshop" with a password of Pureuser!
+Login with the credentials provided in the Credentials Tab of the Guide.
 Go to Storage --> Hosts and verify that the host "ansiblehost" has been added.
+
+# Going Further
+
+Feel free to edit the purefa-host.yml file and replace the variable ansible_hostname: ansible_hostname with a different hostname to add a different host to the FlashArray.

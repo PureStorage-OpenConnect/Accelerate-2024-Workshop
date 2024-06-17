@@ -10,6 +10,17 @@ This content is a toolkit for demonstrating Ansible's capabilities on the Pure S
 
 The Workshop Lab is pre-configured and ready to go as-is in **Pure's Test Drive** environment. If you are running this workshop in your own environment, you will need to configure the FlashArray and Ansible environment as per the instructions in the original repository.
 
+## To start the Lab:
+
+- On the Windows host, click on the Chrome icon on the desktop and click on the "flasharray1" bookmark to open the FlashArray GUI.
+- Login to the flasharray using the credentials provided in the Credentials tab.
+- Minmize the browser window and open the terminal by clicking on the "Putty" icon on the desktop.
+- Select the "linux1" host and click "Open" to open the terminal.
+- Login with the credentials provided in the Credentials tab.
+- Change directories to the `ansible-workshop/ansible-flasharray/1.0-get-facts` directory.
+- Follow the guide. The internal Guide may be difficult to follow tih the limited space, so it is also avaiable on the desktop and in the GitHub repository as a PDF file.
+- Click on this link to open the Guide from the GitHub Repository: [Guide](https://github.com/PureStorage-OpenConnect/ansible-flasharray-workshop/blob/master/Ansible%20FlashArray%20Workshop%20Guide.pdf)
+
 #### Section 1 - Ansible FlashArray Basic (single FA)
 
 - [Exercise 1.0 - Using the purefa_info module](1.0-get-facts)

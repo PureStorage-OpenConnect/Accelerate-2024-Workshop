@@ -95,3 +95,11 @@ localhost                  : ok=2    changed=1    unreachable=0    failed=0    s
 Login to the Pure Storage FlashArray with your web browser.
 
 The list of volumes configured in the array can be found by navigating the menu on the left to Storage, then selecting the top menu item Volumes.
+
+# Going Further
+
+Feel free to edit the .yml file and replace any of the variables to create different volumes on the FlashArray.
+
+```
+
+```
