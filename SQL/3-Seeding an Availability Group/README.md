@@ -11,45 +11,159 @@ In addition to saving you time, this process saves your database systems from th
 
 So let’s do it...we’re going to snapshot a database on **Windows1**, clone that snapshot to the second instance of SQL Server on **Windows2**, and seed an Availability Group replica from that. 
 
-An overview of the process
-* [Prepare the secondary replica](#prepare-the-secondary-replica)
-* [Take a snapshot backup of TPCC100 on Windows1](#take-a-snapshot-backup-of-tpcc100-on-windows1)
-* [Restore the snapshot backup to Windows2](#restore-the-snapshot-backup-to-windows2)
-* [Complete the Availability Group Initialization Process](#complete-the-availability-group-initilization-process)
-* [Create the Availability Group](#create-the-availability-group)
-* [Check the state of the Availability Group Replication](#check-the-state-of-the-availability-group-replication)
-
 Here is a description of the major activities in this lab:
-
 
 ## Environment Setup
 
 1. Define variables for primary and secondary SQL servers, AG name, database name, backup location, FlashArray details, and volume names.
+
+    ```
+    $PrimarySqlServer   = 'Windows1'                    # SQL Server Name - Primary Replica
+    $SecondarySqlServer = 'Windows2'                    # SQL Server Name - Secondary Replica
+    $AgName             = 'ag1'                         # Name of availability group
+    $DbName             = 'TPCC100'                     # Name of database to place in AG
+    $BackupShare        = '\\Windows2\backup'           # File location for metadata backup file.
+    $FlashArrayName     = 'flasharray1.testdrive.local' # FlashArray containing the volumes for our primary replica
+    $SourceVolumeName   = 'Windows1Vol1'                # Name of the Volume on FlashArray1 for Windows1
+    $TargetVolumeName   = 'Windows2Vol1'                # Name of the Volume on FlashArray1 for Windows2
+    ```
+
 1. Establish PowerShell remoting sessions to the secondary replica and build SMO connections to both SQL Server instances.
-1. Set credentials for FlashArray and connect to it.
+    ```
+    $SecondarySession = New-PSSession -ComputerName $SecondarySqlServer
+    ```
+
+1. Build persistent SMO connections to each SQL Server that will participate in the availability group
+    ```
+    $SqlInstancePrimary = Connect-DbaInstance -SqlInstance $PrimarySqlServer -TrustServerCertificate -NonPooledConnection 
+    $SqlInstanceSecondary = Connect-DbaInstance -SqlInstance $SecondarySqlServer -TrustServerCertificate -NonPooledConnection 
+    ```
+
+1. Set credentials for FlashArray and connect to it, username `pureuser`, password `testdrive`
+    ```
+    $Passowrd = ConvertTo-SecureString 'testdrive1' -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ('pureuser', $Passowrd)
+    $FlashArray = Connect-Pfa2Array -EndPoint $FlashArrayName -Credential $Credential -IgnoreCertificateError
+    ```
 
 ## Snapshot Backup on Primary Replica
 
 1. Suspend the primary database for a snapshot backup.
-1. Take a snapshot of the primary database volume and replicate it.
+    ```
+    $Query = "ALTER DATABASE [$DbName] SET SUSPEND_FOR_SNAPSHOT_BACKUP = ON"
+    Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
+    ```
+
+1. Take a snapshot of the primary database volume.
+    ```
+    $SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
+    ```
+
 1. Perform a metadata-only backup of the database, which will unfreeze the database.
+
+    ```
+    $BackupFile = "$BackupShare\$DbName$(Get-Date -Format FileDateTime).bkm"
+    $Query = "BACKUP DATABASE $DbName 
+            TO DISK='$BackupFile' 
+            WITH METADATA_ONLY"
+    Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
+    ```
+
 
 ## Prepare Secondary Replica
 
-1. Offline the database and volumes on the secondary replica.
-1. Overwrite the secondary volumes with the snapshot from the primary.
-1. Bring the volumes back online and restore the database with the NORECOVERY option, leaving it in RESTORING mode.
-1. Take a log backup on the primary and restore it on the secondary to ensure data consistency.
+1. Offline the database and volumes on the secondary replica. These are going to be joined to the availability group.  The primary can stay online.
+
+    ```
+    $Query = "ALTER DATABASE [$DbName] SET OFFLINE WITH ROLLBACK IMMEDIATE"
+    Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query
+    ```
+
+    ```
+    Invoke-Command -Session $SecondarySession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk } | Set-Disk -IsOffline $True }
+    ```
+
+1. Overwrite the secondary Volume with the snapshot from the primary.
+    ```
+    New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName ($SourceSnapshot.Name) -Overwrite $true
+    ```
+
+1. Bring the volumes back online 
+    ```
+    Invoke-Command -Session $SecondarySession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk } | Set-Disk -IsOffline $False }
+    ```
+
+1. Restore the database with the NORECOVERY option, leaving it in RESTORING mode.
+    ```
+    $Query = "RESTORE DATABASE [$DbName] FROM DISK = '$BackupFile' WITH METADATA_ONLY, REPLACE, NORECOVERY" 
+    Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
+    ```
+
+1. Take a log backup on the primary 
+
+    ```
+    $Query = "BACKUP LOG [$DbName] TO DISK = '$BackupShare\$DbName-seed.trn' WITH FORMAT, INIT" 
+    Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query -Verbose
+    ```
+
+1. Restore it on the secondary to prepare the secondary replica to join the availability group.
+    ```
+    $Query = "RESTORE LOG [$DbName] FROM DISK = '$BackupShare\$DbName-seed.trn' WITH NORECOVERY" 
+    Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
+    ```
 
 ## Create the Availability Group
 
-1. Create and distribute certificates for authentication between replicas.
+1. Create and distribute certificates for authentication between replicas. This is commonly done using Active Directory, this lab use certificates since there is no Active Directory Domain. First, let's create the certificates on Window1.
+
+    ```
+    New-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Name ag_cert -Subject ag_cert -StartDate (Get-Date) -ExpirationDate (Get-Date).AddYears(10) -Confirm:$false
+
+    Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -Path $BackupShare -EncryptionPassword $Credential.Password -Confirm:$false
+    ```
+
+    Now let's restore those certificates on Windows1. 
+
+    ```
+    $Certificate = (Get-DbaFile -SqlInstance $SqlInstancePrimary -Path $BackupShare -FileType cer).FileName
+
+    Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -DecryptionPassword $Credential.Password -Confirm:$false
+    ```
+
+
 1. Set permissions for the AG.
-1. Use the `New-DbaAvailabilityGroup` cmdlet to create the AG with the specified parameters, including manual failover and seeding mode.
+
+    ```
+    $Query = 'GRANT ALTER ANY AVAILABILITY GROUP TO [NT AUTHORITY\SYSTEM];
+    GRANT CONNECT SQL TO [NT AUTHORITY\SYSTEM];
+    GRANT VIEW SERVER STATE TO [NT AUTHORITY\SYSTEM];
+    '
+    Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
+    Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query -Verbose
+    ````
+
+1. Use the `New-DbaAvailabilityGroup` cmdlet to create the AG with the specified parameters, including manual failover, seeding mode and using the certificate we just created. 
+
+    ```
+    New-DbaAvailabilityGroup `
+        -Primary $SqlInstancePrimary `
+        -Secondary $SqlInstanceSecondary `
+        -Name $AgName `
+        -Database $DbName `
+        -ClusterType None  `
+        -FailoverMode Manual `
+        -SeedingMode Manual `
+        -SharedPath $BackupShare `
+        -Certificate 'ag_cert' `
+        -Verbose -Confirm:$false
+    ```
 
 ## Validation
 
-Check the status of the AG to ensure that the synchronization state is **"Synchronized"**.
+1. Check the status of the AG to ensure that the synchronization state is **"Synchronized"**.
+    ```
+    Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName 
+    ```
 
 
 ## Activity Summary and Wrapping Things Up

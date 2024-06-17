@@ -25,8 +25,8 @@ $AgName             = 'ag1'                         # Name of availability group
 $DbName             = 'TPCC100'                     # Name of database to place in AG
 $BackupShare        = '\\Windows2\backup'           # File location for metadata backup file.
 $FlashArrayName     = 'flasharray1.testdrive.local' # FlashArray containing the volumes for our primary replica
-$SourceVolumeName   = 'Windows1Vol1'                # Name of the Protection Group on FlashArray1
-$TargetVolumeName   = 'Windows2Vol1'                # Name of the Protection Group replicated from FlashArray1 to FlashArray2, in the format of ArrayName:ProtectionGroupName
+$SourceVolumeName   = 'Windows1Vol1'                # Name of the Volume on FlashArray1 for Windows1
+$TargetVolumeName   = 'Windows2Vol1'                # Name of the Volume on FlashArray1 for Windows2
 $TargetDisk         = 'B64D29B183714E0600012396'    # The serial number if the Windows volume containing database files
 
 
@@ -64,8 +64,9 @@ Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 
 
 
-# Take a snapshot of the Protection Group, and replicate it to our other array
+# Take a snapshot of the Volume
 $SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
+$SourceSnapshot
 
 
 # Take a metadata backup of the database, this will automatically unfreeze if successful
@@ -80,7 +81,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
 
 
 ##############################################################################################################################
-## 3 - Prepare the secondary replica to perform a point in time restor and leaving the database in RESTORING mode to join the availability group
+## 3 - Prepare the secondary replica to perform a point in time restore and leaving the database in RESTORING mode to join the availability group
 ##
 
 # Offline the database on the Secondary Replica
@@ -166,5 +167,3 @@ New-DbaAvailabilityGroup `
 # Now let's check the status of the AG...check to see if the SynchronizationState is Synchronized
 Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName 
 
-##############################################################################################################################
-# When you are finished, move on to demo 4 - Click File->Open->.\Accelerate-2024-Workshop-main\SQL\4-Working with the FlashArray API\Working with the FlashArray API.ps1
