@@ -1,4 +1,4 @@
-# Exercise 2.2 - Configure asynchronous replication
+# Exercise 2.3 - Configure asynchronous replication
 
 # Objective
 
