@@ -47,6 +47,13 @@ The Workshop includes the following technologies, which form the basis of the Wo
 | Pure Storage FlashArray       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
 
 
+In this lab, you have two Windows Servers, each with SQL Server 2022 installed. Each server has one 20GB volume attached via iSCSI from FlashArray1. This volume is presented to the operating system as `Disk 1` and is mounted as the Drive `D:\`.
+
+| Resource      | FlashArray Volume Name | Windows Disk Number | Windows Drive Letter
+| -----------   |  ----  |  :----: |  :----:  |
+| Windows1      | Windows1Vol1 | 1           | D:\          |
+| Windows2      | Windows2Vol1 | 1           | D:\          |
+
 <br />
 <br />
 
@@ -69,8 +76,6 @@ This Workshop expects you to understand the following:
 | [1 - Volume Database Refresh](./1-Volume%20Database%20Refresh/README.md) | Refresh a database on the target server (Windows2) from a source database on a separate server (Windows1) | 20 mins |
 | [2 - Point in Time Recovery ](./2-Point%20in%20Time%20Recovery/README.md) | Perform a point-in-time restore using SQL Server 2022's T-SQL Snapshot Backup feature. This uses a FlashArray snapshot as the base of the restore and then restores a log backup. | 30 mins | 
 | [3 - Seeding an Availability Group](./2-Point%20in%20Time%20Recovery/README.md) | Seeding an Availability Group (AG) from SQL Server 2022's T-SQL Snapshot Backup | 45 mins
-
-In each of the modules, anywhere you see a - [ ], there is an activity you need to perform.
 
 <br />
 <br />
