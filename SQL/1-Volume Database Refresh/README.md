@@ -1,6 +1,6 @@
 # Lab 1 - Volume Database Refresh
 
-## Introduction.
+## Introduction
 
 In this lab, you will clone a volume from **Windows1** to **Windows2** in this activity. You will replace the contents of the volume on the target instance, **Windows2**, with the contents of the clone from **Windows1** which contains the `TPCC100` database. This replaces the need to back up and restore the database. 
 
@@ -11,7 +11,7 @@ Each section of line of code is intended to be executed sequentially to facilita
 
 Here is a description of the major activities in this lab:
 
-## Environment Setup:
+## Environment Setup
 
 In this section of code you are defining key parameters and variables for reuse throughout the script.
 
@@ -53,7 +53,7 @@ In this section of code you are defining key parameters and variables for reuse 
     Select-Object Name, SizeMB
     ```
 
-## Volume Cloning Process:
+## Volume Cloning Process
 
 In this section of code you are cloning a volume and presenting it to a second Windows server and attaching the database.
 
