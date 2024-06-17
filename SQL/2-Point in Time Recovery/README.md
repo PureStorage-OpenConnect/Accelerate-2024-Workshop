@@ -49,7 +49,7 @@ In this demo, you copied, nearly instantaneously, a 12GB database between two in
 <br />
 <br />
 
-# Next Steps
+# Continue On To The Next Lab
 
 Now move onto the next lab, [3-Seeding an Availability Group](../3-Seeding%20an%20Availability%20Group/README.md)
 

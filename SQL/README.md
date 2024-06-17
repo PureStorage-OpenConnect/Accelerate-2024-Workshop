@@ -82,6 +82,6 @@ This Workshop expects you to understand the following:
 <br />
 <br />
 
-# Next Steps
+# Continue On To The Next Lab
 
 Next, Continue to [1 - Volume Database Refresh](./1-Volume%20Database%20Refresh/README.md)

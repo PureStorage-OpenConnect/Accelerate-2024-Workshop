@@ -52,7 +52,7 @@ Here is a description of the major activities in this lab:
 Check the status of the AG to ensure that the synchronization state is **"Synchronized"**.
 
 
-## Activity Summary
+## Activity Summary and Wrapping Things Up
 In this activity, you initialized an availability group using TSQL-based snapshots inside SQL Server with array-based snapshots in FlashArray, nearly instantaneously. Traditional availability group initialization or reseeding requires a size of data operation via either backup and restore or direct seeding. 
 
 There's one nuance I want to call out here in this activity. This all happened on one array in our test lab. You will likely want your availability group replicas on separate arrays in a production environment. If you want to dive into the details of that, check out the post in the More Resources section below.
@@ -61,7 +61,6 @@ Futher, if you want to deep dive into many more SQL Server use-cases on FlashArr
 
 <br />
 <br />
-
 
 # More Resources
 - [Seeding an Availability Group Replica from Snapshot](https://www.nocentino.com/posts/2022-05-26-seed-ag-replica-from-snapshot/)

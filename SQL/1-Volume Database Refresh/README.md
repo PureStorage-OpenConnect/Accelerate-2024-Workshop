@@ -38,7 +38,7 @@ In this demo, you copied, nearly instantaneously, a 12GB database between two in
 <br />
 <br />
 
-# Next Steps
+# Continue On To The Next Lab
 
 Now move onto the next lab, [2-Point in Time Recovery](../2-Point%20in%20Time%20Recovery/README.md)
 
