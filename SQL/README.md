@@ -1,10 +1,6 @@
 # Accelerate 2024 Workshop - SQL Server Innovations on Pure Storage
 
-<p align="center">
-
 ![Accelerate 2024 - SQL Server Innovations on Pure Storage](/img/sql.png)
-
-</p>
 
 # About this Workshop
 
@@ -13,6 +9,8 @@ Welcome to this Microsoft Solutions workshop on Modern Storage Platforms for SQL
 This Workshop focuses on understanding where storage lives in your data platform and learning how to use modern storage techniques to reduce the overhead and complexity of managing data in your environment.
 
 You'll start by logging into a virtual lab environment using your laptop, then work through a module covering leveraging snapshots to reduce the time it takes to copy, clone your databases, perform database restores, and build availability groups from the snapshots. 
+
+<br />
 
 # Learning Objectives
 
@@ -30,20 +28,16 @@ The concepts and skills taught in this Workshop form the starting points for:
 - Data professionals tasked with complete or partial responsibility for database management and availability
 
 <br />
-<br />
 
 # Business Applications of this Workshop
 
-Businesses require access to data. The techniques described in this Workshop enable data professionals to decouple the size of the databases from the operations needed to be performant. 
+Businesses require access to data. The techniques described in this Workshop enable data professionals to decouple the size of the databases from the operations needed to be performant and accelerating business outcomes. 
 
-
-<br />
 <br />
 
 # Technologies used in this Workshop
 
 The Workshop includes the following technologies, which form the basis of the Workshop. 
-
 
 | Syntax      | Description |
 | ----------- | ----------- |
@@ -52,6 +46,9 @@ The Workshop includes the following technologies, which form the basis of the Wo
 | [Transact-SQL snapshot backup](https://learn.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16)  | A new SQL Server 2022 feature that provides application consistent snapshots integrated directly into SQL Server
 | Pure Storage FlashArray       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
 
+<br />
+
+# Lab Layout
 
 In this lab, you have two Windows Servers, each with SQL Server 2022 installed. Each server has one 20GB volume attached via iSCSI from FlashArray1. This volume is presented to the operating system as `Disk 1` and is mounted as the Drive `D:\`. These are used in all activities in these labs.
 
@@ -60,7 +57,6 @@ In this lab, you have two Windows Servers, each with SQL Server 2022 installed. 
 | Windows1      | Windows1Vol1 | 1           | D:\          |
 | Windows2      | Windows2Vol1 | 1           | D:\          |
 
-<br />
 <br />
 
 # Before Taking this Workshop
