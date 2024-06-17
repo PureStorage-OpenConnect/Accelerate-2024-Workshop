@@ -42,9 +42,9 @@ In this section of code you are defining key parameters and variables for reuse 
 
 1. **Create Remoting Session**: Create a PowerShell Remoting session to the target server (Windows2).
 
-```
-$TargetSession = New-PSSession -ComputerName $TargetSqlServer
-```
+    ```
+    $TargetSession = New-PSSession -ComputerName $TargetSqlServer
+    ```
 
 1. **Database Information:** Retrieve and display the size of database to be cloned (TPCC100). Let's check out the size of the database we're going to clone, 12GB...the cloning operation is instant, regardless of databases size, 12KB or 12TB will take just as long.
 
@@ -55,20 +55,31 @@ $TargetSession = New-PSSession -ComputerName $TargetSqlServer
 
 ## Volume Cloning Process:
 
-
-
-
-
-
-
 In this section of code you are cloning a volume and presenting it to a second Windows server and attaching the database.
 
-1. Offline the target volume on Windows2.
+1. Offline the volume on Windows2, this is the volume that will be updated
+
+    ```
+    Invoke-Command -Session $TargetSession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDiskSerialNumber } | Set-Disk -IsOffline $True }
+    ```
 1. Connect to the FlashArray's REST API.
-1. Clone the volume from Windows1 to Windows2 using FlashArray.
+    ```
+    $FlashArray = Connect-Pfa2Array -EndPoint $ArrayName -Credential $Credential -IgnoreCertificateError
+    ```
+1. Perform the volume clone operation, cloning the contents of the volume attached to Windows1 to Windows2 
+    ```
+    New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName $SourceVolumeName  -Overwrite $true 
+    ```
 1. Online the volume on Windows2.
+    ```
+    Invoke-Command -Session $TargetSession -ScriptBlock { Get-Disk | ? { $_.SerialNumber -eq $using:TargetDiskSerialNumber } | Set-Disk -IsOffline $False }
+    ```
 1. Attach the cloned database to the SQL Server on Windows2.
-1. Verify the cloned database on the target SQL instance (Windows2).
+    ```
+    $Query = "CREATE DATABASE [TPCC100] ON ( FILENAME = N'D:\SQL\tpcc100.mdf' ), ( FILENAME = N'D:\SQL\tpcc100_log.ldf' ) FOR ATTACH"
+    Invoke-DbaQuery -SqlInstance $TargetSqlInstance -Database master -Query $Query 
+    ```
+1. Verify the cloned database on the target SQL instance (Windows2). We cloned the database instantly between two instances of SQL Server
 
 ## Activity Summary
 
