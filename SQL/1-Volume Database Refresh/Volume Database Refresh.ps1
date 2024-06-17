@@ -63,7 +63,7 @@ Get-DbaDatabase -SqlInstance $SourceSqlInstance -Database 'TPCC100' |
 
 
 ##############################################################################################################################
-## 2 - Cloning a Volume containing a database, offline the volume on Windows2 (the one to be updated), Connect to your FlashArray, Clone the Volume from Windows1 to Windows2
+## 2 - Cloning a Database Using Volume Snapshots - offline the volume on Windows2 (the one to be updated), Connect to your FlashArray, Clone the Volume from Windows1 to Windows2
 ##
 
 

@@ -71,7 +71,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Query $Query -Verbose
 
 
 
-# Take a snapshot of the Protection Group while the database is frozen
+# Take a snapshot of the Volume while the database is frozen
 $Snapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $FlashArrayDbVol 
 $Snapshot
 
@@ -113,7 +113,12 @@ $LogBackup = Backup-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Typ
 # Looking at the backup history we see the full backup (snapshot) and the log backup we just took
 Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Since (Get-Date).AddDays(-1)
 
+##############################################################################################################################
 
+
+##############################################################################################################################
+## 4 - Deleting a Critical Database Table
+##
 
 # Delete a table...I should update my resume, right? :P 
 Invoke-DbaQuery -SqlInstance $SqlInstance -Database $DbName -Query "DROP TABLE customer"
@@ -122,7 +127,7 @@ Invoke-DbaQuery -SqlInstance $SqlInstance -Database $DbName -Query "DROP TABLE c
 
 
 ##############################################################################################################################
-## 4 - Performing a point in time restore using snapshot backup
+## 5 - Performing a point in time restore using snapshot backup
 ##
 
 
@@ -162,6 +167,9 @@ Get-DbaDbState -SqlInstance $SqlInstance -Database $DbName
 Restore-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Path $LogBackup.BackupPath -NoRecovery -Continue
 
 
+##############################################################################################################################
+## 6 - Recovery the database and verify the data is restored
+##
 
 # Online the database
 $Query = "RESTORE DATABASE $DbName WITH RECOVERY" 

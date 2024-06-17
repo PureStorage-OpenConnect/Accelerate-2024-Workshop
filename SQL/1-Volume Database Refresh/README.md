@@ -11,7 +11,7 @@ Each section of line of code is intended to be executed sequentially to facilita
 
 Here is a description of the major activities in this lab:
 
-## Environment Setup
+## 1 - Setting up the enviroment
 
 In this section of code you are defining key parameters and variables for reuse throughout the script.
 
@@ -53,7 +53,7 @@ In this section of code you are defining key parameters and variables for reuse 
     Select-Object Name, SizeMB
     ```
 
-## Volume Cloning Process
+## 2 - Cloning a Database Using Volume Snapshots
 
 In this section of code you are cloning a volume and presenting it to a second Windows server and attaching the database.
 
