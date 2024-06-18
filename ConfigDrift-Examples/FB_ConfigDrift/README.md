@@ -12,6 +12,8 @@ We even have a few challenges for you to enhance the solution further.
 
 You will need to login to the FlashBlade and generate a new API token for the pureuser account, and paste it into your FBArrayConfig.json
 
+You can generate an API token by logging into the GUI as 'pureuser'.  Then navigate to the Settings -> Users (under Security) page.  On the line for the 'pureuser' click on the vertical ellipsis (far right column) and choose 'Create API Token'.  Use the copy mechanism to paste it into the FBArrayConfig.json file.
+
 
 #### 1. Understanding the Configuration File
 
