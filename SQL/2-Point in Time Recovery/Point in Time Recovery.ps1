@@ -168,7 +168,7 @@ Restore-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Path $LogBackup
 
 
 ##############################################################################################################################
-## 6 - Recovery the database and verify the data is restored
+## 6 - Recover the database and verify the data is restored
 ##
 
 # Online the database

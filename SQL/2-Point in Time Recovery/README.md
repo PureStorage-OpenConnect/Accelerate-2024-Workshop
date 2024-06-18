@@ -142,7 +142,7 @@ Here is a description of the major activities in this lab:
     Restore-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Path $LogBackup.BackupPath -NoRecovery -Continue
     ```
 
-# 6 - Recovery the database and verify the data is restored
+# 6 - Recover the database and verify the data is restored
 
 1. **Check Database State:** Confirm that the database state is 'RESTORING' before applying the log backup and 'ONLINE' after recovery.
 
