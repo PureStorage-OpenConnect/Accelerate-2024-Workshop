@@ -13,7 +13,7 @@
             "settings": [
                 {
                     "Name": "BannerPath",
-                    "Value": ".\\banners\\standardbanner.txt"
+                    "Value": "C:\\Workshop\\ConfigDrift-Examples\\FA_ConfigDrift\\Banners\\standardbanner.txt"
                 },
                 {
                     "Name": "GUIIdleTimeoutMinutes",
