@@ -3,7 +3,7 @@
 # Scenario
 In this lab you will learn how to perform a point-in-time restore using SQL Server 2022's [TSQL Based Snapshot Backup](https://docs.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16) feature, leveraging a FlashArray snapshot as the base and restoring a log backup. This lab is on **Windows1**
 
-> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning.
+> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning. Below you will find code and if there's output from the cmdlet you will see that immediatly below the cmdlet.
 
 Here is a description of the major activities in this lab:
 

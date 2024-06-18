@@ -6,7 +6,7 @@ In this lab, you will clone a volume from **Windows1** to **Windows2** in this a
 
 Since this operation is inside the array, it happens nearly instantaneously. Another benefit is when you clone a volume and present it to another host, the volume does not consume additional space until data starts changing. When data does start changing, the changed blocks are tracked and exposed as a performance metric on the FlashArray Web Interface Dashboard and Array Capacity panel.
 
-> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning.
+> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning. Below you will find code and if there's output from the cmdlet you will see that immediatly below the cmdlet.
 
 Here is a description of the major activities in this lab:
 

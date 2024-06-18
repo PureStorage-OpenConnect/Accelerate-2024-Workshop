@@ -23,7 +23,7 @@ Here's a high-level overview of the process:
 * [Create the Availability Group](#4---create-the-availability-group) - Create the availability group using the cmdlet `New-DbaAvailabilityGroup`. This operation should only take several seconds. 
 * [Validation](#5---validation) - Once finished, ensure that the synchronization state is **"Synchronized"**. 
 
-> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning.
+> Each line of code below is intended to be executed sequentially to facilitate understanding, discovery and learning. Below you will find code and if there's output from the cmdlet you will see that immediatly below the cmdlet.
 
 Here is a description of the major activities in this lab:
 
