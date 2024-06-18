@@ -1,4 +1,4 @@
-# Lab 2 - Seeding an Availability Group - Using SQL Server 2022's T-SQL Snapshot Backup 
+# Lab 3 - Seeding an Availability Group - Using SQL Server 2022's T-SQL Snapshot Backup 
 
 # Scenario
 In this activity, you will build an Availability Group from Snapshot leveraging FlashArray snapshots and the new [TSQL Based Snapshot Backup](https://docs.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16) functionality in SQL Server 2022. This lab is on both **Windows1** and **Windows2**
