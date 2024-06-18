@@ -117,7 +117,11 @@ Here is a description of the major activities in this lab:
 
     ```
     Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -LastFull
+    ```
 
+    You should see output similar to this:
+
+    ```
     SqlInstance Database Type TotalSize DeviceType Start                   Duration End                    
     ----------- -------- ---- --------- ---------- -----                   -------- ---                    
     Windows1    TPCC100  Full 7.00 GB   Disk       2024-06-18 08:37:59.000 00:00:00 2024-06-18 08:37:59.000
@@ -134,7 +138,11 @@ Here is a description of the major activities in this lab:
 
     ```
     Get-DbaDbBackupHistory -SqlInstance $SqlInstance -Database $DbName -Since (Get-Date).AddDays(-1)
+    ```
 
+    You should see output similar to this:
+
+    ```
     SqlInstance Database Type TotalSize DeviceType Start                   Duration End                    
     ----------- -------- ---- --------- ---------- -----                   -------- ---                    
     Windows1    TPCC100  Log  813.00 KB Disk       2024-06-18 08:40:43.000 00:00:00 2024-06-18 08:40:43.000
@@ -166,7 +174,11 @@ Here is a description of the major activities in this lab:
 
     ```
     New-Pfa2Volume -Array $FlashArray -Name $FlashArrayDbVol -SourceName ($Snapshot.Name) -Overwrite $true
+    ```
 
+    You should see output similar to this:
+
+    ```
     Id                      : cc8b751e-ec39-3f05-c485-f164f325451d
     Name                    : Windows1Vol1
     ConnectionCount         : 1
@@ -190,6 +202,7 @@ Here is a description of the major activities in this lab:
     ```
 
 1. **Online the Volume:** Bring the disk volume back online.
+
     ```
     Get-Disk | Where-Object { $_.SerialNumber -eq $TargetDisk} | Set-Disk -IsOffline $False
     ```
@@ -201,8 +214,8 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstance -Database master -Query $Query -Verbose
     ```
 
-    Once the command completes, you should see output similar to this:
-    
+    You should see output similar to this:
+
     ```
     VERBOSE: RESTORE DATABASE successfully processed 0 pages in 0.350 seconds (0.000 MB/sec).
     ```
@@ -210,7 +223,11 @@ Here is a description of the major activities in this lab:
 1. **Verify Database State:** Let's check the current `Status` of the database...its RESTORING
     ```
     Get-DbaDbState -SqlInstance $SqlInstance -Database $DbName 
+    ```
 
+    You should see output similar to this:
+
+    ```
     Access       : MULTI_USER
     ComputerName : Windows1
     DatabaseName : TPCC100
@@ -226,7 +243,7 @@ Here is a description of the major activities in this lab:
     Restore-DbaDatabase -SqlInstance $SqlInstance -Database $DbName -Path $LogBackup.BackupPath -NoRecovery -Continue
     ```
 
-    Once the command completes, you should see output similar to this:
+    You should see output similar to this:
 
     ```
     ComputerName         : Windows1
@@ -261,6 +278,8 @@ Here is a description of the major activities in this lab:
     ```
     Get-DbaDbTable -SqlInstance $SqlInstance -Database $DbName -Table 'Customer' | Format-Table
     ```
+
+    You should see output similar to this:
 
     ```
     ComputerName InstanceName SqlInstance Database Schema Name     IndexSpaceUsed DataSpaceUsed RowCount HasClusteredIndex IsFileTable IsMemoryOptimized IsPartitioned FullTextIndex 

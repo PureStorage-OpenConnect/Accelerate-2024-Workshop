@@ -68,6 +68,8 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
     ```
 
+    You should see output similar to this:
+
     ```
     VERBOSE: Database 'TPCC100' acquired suspend locks in session 156.
     VERBOSE: I/O is frozen on database TPCC100. No user action is required. However, if I/O is not resumed promptly, you could cancel the backup.
@@ -78,6 +80,8 @@ Here is a description of the major activities in this lab:
     ```
     $SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
     ```
+
+    You should see output similar to this:
 
     ```
     Id            : b5d4c9aa-80fe-f7f8-258e-67e8b8769647
@@ -104,6 +108,8 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
     ```
 
+    You should see output similar to this:
+
     ```
     VERBOSE: I/O was resumed on database TPCC100. No user action is required.
     VERBOSE: Database 'TPCC100' released suspend locks in session 156.
@@ -114,12 +120,14 @@ Here is a description of the major activities in this lab:
 
 ## 3 - Prepare Secondary Replica
 
-1. Offline the database and volumes on the secondary replica. These are going to be joined to the availability group.  The primary can stay online.
+1. Offline the database on the secondary replica. These are going to be joined to the availability group.  The primary can stay online.
 
     ```
     $Query = "ALTER DATABASE [$DbName] SET OFFLINE WITH ROLLBACK IMMEDIATE"
     Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Query $Query
     ```
+
+1. Offline the volume on the secondary replica. 
 
     ```
     Invoke-Command -Session $SecondarySession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk } | Set-Disk -IsOffline $True }
@@ -129,6 +137,8 @@ Here is a description of the major activities in this lab:
     ```
     New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName ($SourceSnapshot.Name) -Overwrite $true
     ```
+
+    You should see output similar to this:
 
     ```
     Id                      : 1085e55c-3077-8e71-ae67-8a2613e88410
@@ -164,6 +174,8 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
     ```
 
+    You should see output similar to this:
+
     ```
     VERBOSE: RESTORE DATABASE successfully processed 0 pages in 0.722 seconds (0.000 MB/sec).
     ```
@@ -175,6 +187,8 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query -Verbose
     ```
 
+    You should see output similar to this:
+
     ```
     VERBOSE: Processed 3 pages for database 'TPCC100', file 'tpcc100_log' on file 1.
     VERBOSE: BACKUP LOG successfully processed 3 pages in 0.054 seconds (0.406 MB/sec).
@@ -185,6 +199,8 @@ Here is a description of the major activities in this lab:
     $Query = "RESTORE LOG [$DbName] FROM DISK = '$BackupShare\$DbName-seed.trn' WITH NORECOVERY" 
     Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
     ```
+
+    You should see output similar to this:
 
     ```
     VERBOSE: Processed 0 pages for database 'TPCC100', file 'tpcc100' on file 1.
@@ -201,6 +217,8 @@ Here is a description of the major activities in this lab:
 
     Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -Path $BackupShare -EncryptionPassword $Credential.Password -Confirm:$false
     ```
+
+    You should see output similar to this:
 
     ```
     ComputerName                 : Windows1
@@ -238,6 +256,8 @@ Here is a description of the major activities in this lab:
 
     Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -DecryptionPassword $Credential.Password -Confirm:$false
     ```
+
+    You should see output similar to this:
 
     ```
     ComputerName                 : Windows2
@@ -282,6 +302,8 @@ Here is a description of the major activities in this lab:
         -Certificate 'ag_cert' `
         -Verbose -Confirm:$false
     ```
+
+    You should see output similar to this:
 
     ```
     ComputerName               : Windows1

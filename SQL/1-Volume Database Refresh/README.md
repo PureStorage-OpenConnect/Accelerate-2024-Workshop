@@ -106,7 +106,11 @@ In this section of code you are cloning a volume and presenting it to a second W
 1. Verify the cloned database on the target SQL instance (Windows2). We cloned the database instantly between two instances of SQL Server!
     ```
     Get-DbaDatabase -SqlInstance $TargetSqlInstance -Database 'TPCC100' | Select-Object Name, SizeMB
+    ```
 
+    You should see output similar to this:
+
+    ```
     Name    SizeMB
     ----    ------
     TPCC100  12288
