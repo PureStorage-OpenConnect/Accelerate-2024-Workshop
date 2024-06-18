@@ -68,9 +68,30 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
     ```
 
+    ```
+    VERBOSE: Database 'TPCC100' acquired suspend locks in session 156.
+    VERBOSE: I/O is frozen on database TPCC100. No user action is required. However, if I/O is not resumed promptly, you could cancel the backup.
+    VERBOSE: Database 'TPCC100' successfully suspended for snapshot backup in session 156.
+    ```
+
 1. Take a snapshot of the primary database volume.
     ```
     $SourceSnapshot = New-Pfa2VolumeSnapshot -Array $FlashArray -SourceName $SourceVolumeName
+    ```
+
+    ```
+    Id            : b5d4c9aa-80fe-f7f8-258e-67e8b8769647
+    Name          : Windows1Vol1.12
+    Created       : 6/18/2024 3:48:57 PM
+    Destroyed     : False
+    Pod           : 
+    Provisioned   : 21474836480
+    Source        : @{Id='cc8b751e-ec39-3f05-c485-f164f325451d'; Name='Windows1Vol1'}
+    Suffix        : 12
+    TimeRemaining : 
+    Serial        : B64D29B183714E0600016A19
+    Space         : @{Snapshots=0; TotalPhysical=0; TotalProvisioned=21474836480; Unique=0; Virtual=0; SnapshotsEffective=0}
+    VolumeGroup   : 
     ```
 
 1. Perform a metadata-only backup of the database, which will unfreeze the database.
@@ -83,6 +104,13 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Query $Query -Verbose
     ```
 
+    ```
+    VERBOSE: I/O was resumed on database TPCC100. No user action is required.
+    VERBOSE: Database 'TPCC100' released suspend locks in session 156.
+    VERBOSE: Database 'TPCC100' originally suspended for snapshot backup in session 156 successfully resumed in session 156.
+    VERBOSE: Processed 0 pages for database 'TPCC100', file 'tpcc100' on file 1.
+    VERBOSE: BACKUP DATABASE successfully processed 0 pages in 0.008 seconds (0.000 MB/sec).
+    ```
 
 ## 3 - Prepare Secondary Replica
 
@@ -102,6 +130,29 @@ Here is a description of the major activities in this lab:
     New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName ($SourceSnapshot.Name) -Overwrite $true
     ```
 
+    ```
+    Id                      : 1085e55c-3077-8e71-ae67-8a2613e88410
+    Name                    : Windows2Vol1
+    ConnectionCount         : 1
+    Created                 : 6/18/2024 3:48:57 PM
+    Destroyed               : False
+    HostEncryptionKeyStatus : none
+    PriorityAdjustment      : @{PriorityAdjustmentOperator='+'; PriorityAdjustmentValue=0}
+    Provisioned             : 21474836480
+    Qos                     : 
+    Serial                  : B64D29B183714E0600012396
+    Space                   : @{DataReduction=6.068545; Snapshots=47656; ThinProvisioning=0.5451922; TotalPhysical=145315; TotalProvisioned=21474836480; TotalReduction=13.3431; 
+                            Unique=97659; Virtual=9766922752; SnapshotsEffective=231740416; TotalEffective=241702912; UniqueEffective=9962496}
+    TimeRemaining           : 
+    Pod                     : 
+    Priority                : 0
+    PromotionStatus         : promoted
+    RequestedPromotionState : promoted
+    Source                  : @{Id='cc8b751e-ec39-3f05-c485-f164f325451d'; Name='Windows1Vol1'}
+    Subtype                 : regular
+    VolumeGroup             : 
+    ```
+
 1. Bring the volumes back online 
     ```
     Invoke-Command -Session $SecondarySession -ScriptBlock { Get-Disk | Where-Object { $_.SerialNumber -eq $using:TargetDisk } | Set-Disk -IsOffline $False }
@@ -113,6 +164,10 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
     ```
 
+    ```
+    VERBOSE: RESTORE DATABASE successfully processed 0 pages in 0.722 seconds (0.000 MB/sec).
+    ```
+
 1. Take a log backup on the primary 
 
     ```
@@ -120,10 +175,21 @@ Here is a description of the major activities in this lab:
     Invoke-DbaQuery -SqlInstance $SqlInstancePrimary -Database master -Query $Query -Verbose
     ```
 
+    ```
+    VERBOSE: Processed 3 pages for database 'TPCC100', file 'tpcc100_log' on file 1.
+    VERBOSE: BACKUP LOG successfully processed 3 pages in 0.054 seconds (0.406 MB/sec).
+    ```
+
 1. Restore it on the secondary to prepare the secondary replica to join the availability group.
     ```
     $Query = "RESTORE LOG [$DbName] FROM DISK = '$BackupShare\$DbName-seed.trn' WITH NORECOVERY" 
     Invoke-DbaQuery -SqlInstance $SqlInstanceSecondary -Database master -Query $Query -Verbose
+    ```
+
+    ```
+    VERBOSE: Processed 0 pages for database 'TPCC100', file 'tpcc100' on file 1.
+    VERBOSE: Processed 3 pages for database 'TPCC100', file 'tpcc100_log' on file 1.
+    VERBOSE: RESTORE LOG successfully processed 3 pages in 0.063 seconds (0.348 MB/sec).
     ```
 
 ## 4 - Create the Availability Group
@@ -136,6 +202,35 @@ Here is a description of the major activities in this lab:
     Backup-DbaDbCertificate -SqlInstance $SqlInstancePrimary -Certificate ag_cert -Path $BackupShare -EncryptionPassword $Credential.Password -Confirm:$false
     ```
 
+    ```
+    ComputerName                 : Windows1
+    InstanceName                 : MSSQLSERVER
+    SqlInstance                  : Windows1
+    Database                     : master
+    Name                         : ag_cert
+    Subject                      : ag_cert
+    StartDate                    : 6/18/2024 12:00:00 AM
+    ActiveForServiceBrokerDialog : False
+    ExpirationDate               : 6/18/2034 12:00:00 AM
+    Issuer                       : ag_cert
+    LastBackupDate               : 1/1/0001 12:00:00 AM
+    Owner                        : dbo
+    PrivateKeyEncryptionType     : MasterKey
+    Serial                       : 7d 98 4f be 3b ec bd 80 49 4f 78 26 24 3a 79 98
+
+    Certificate  : ag_cert
+    ComputerName : Windows1
+    Database     : master
+    DatabaseID   : 1
+    InstanceName : MSSQLSERVER
+    Key          : \\Windows2\backup\Windows1-master-ag_cert.pvk
+    Path         : \\Windows2\backup\Windows1-master-ag_cert.cer
+    SqlInstance  : Windows1
+    Status       : Success
+
+    ```
+
+
     Now let's restore those certificates on Windows1. 
 
     ```
@@ -144,6 +239,22 @@ Here is a description of the major activities in this lab:
     Restore-DbaDbCertificate -SqlInstance $SqlInstanceSecondary -Path $Certificate -DecryptionPassword $Credential.Password -Confirm:$false
     ```
 
+    ```
+    ComputerName                 : Windows2
+    InstanceName                 : MSSQLSERVER
+    SqlInstance                  : Windows2
+    Database                     : master
+    Name                         : ag_cert
+    Subject                      : ag_cert
+    StartDate                    : 6/18/2024 12:00:00 AM
+    ActiveForServiceBrokerDialog : True
+    ExpirationDate               : 6/18/2034 12:00:00 AM
+    Issuer                       : ag_cert
+    LastBackupDate               : 1/1/0001 12:00:00 AM
+    Owner                        : dbo
+    PrivateKeyEncryptionType     : MasterKey
+    Serial                       : 7d 98 4f be 3b ec bd 80 49 4f 78 26 24 3a 79 98
+    ```
 
 1. Set permissions for the AG.
 
@@ -172,11 +283,41 @@ Here is a description of the major activities in this lab:
         -Verbose -Confirm:$false
     ```
 
+    ```
+    ComputerName               : Windows1
+    InstanceName               : MSSQLSERVER
+    SqlInstance                : Windows1
+    LocalReplicaRole           : Primary
+    AvailabilityGroup          : ag1
+    PrimaryReplica             : Windows1
+    ClusterType                : None
+    DtcSupportEnabled          : False
+    AutomatedBackupPreference  : Secondary
+    AvailabilityReplicas       : {Windows1, Windows2}
+    AvailabilityDatabases      : {TPCC100}
+    AvailabilityGroupListeners : {}
+    ```
+
 ## 5 - Validation
 
 1. Check the status of the AG to ensure that the synchronization state is **"Synchronized"**.
     ```
     Get-DbaAgDatabase -SqlInstance $SqlInstancePrimary -AvailabilityGroup $AgName 
+    ```
+
+    ```
+    ComputerName               : Windows1
+    InstanceName               : MSSQLSERVER
+    SqlInstance                : Windows1
+    LocalReplicaRole           : Primary
+    AvailabilityGroup          : ag1
+    PrimaryReplica             : Windows1
+    ClusterType                : None
+    DtcSupportEnabled          : False
+    AutomatedBackupPreference  : Secondary
+    AvailabilityReplicas       : {Windows1, Windows2}
+    AvailabilityDatabases      : {TPCC100}
+    AvailabilityGroupListeners : {}
     ```
 
 

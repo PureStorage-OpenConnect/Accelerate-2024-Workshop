@@ -48,8 +48,11 @@ In this section of code you are defining key parameters and variables for reuse 
 1. **Database Information:** Retrieve and display the size of database to be cloned (TPCC100). Let's check out the size of the database we're going to clone, 12GB...the cloning operation is instant, regardless of databases size, 12KB or 12TB will take just as long.
 
     ```
-    Get-DbaDatabase -SqlInstance $SourceSqlInstance -Database 'TPCC100' |
-    Select-Object Name, SizeMB
+    Get-DbaDatabase -SqlInstance $SourceSqlInstance -Database 'TPCC100' | Select-Object Name, SizeMB
+
+    Name    SizeMB
+    ----    ------
+    TPCC100  12288
     ```
 
 ## 2 - Cloning a Database Using Volume Snapshots
@@ -68,6 +71,28 @@ In this section of code you are cloning a volume and presenting it to a second W
 1. Perform the volume clone operation, cloning the contents of the volume attached to Windows1 to Windows2 
     ```
     New-Pfa2Volume -Array $FlashArray -Name $TargetVolumeName -SourceName $SourceVolumeName  -Overwrite $true 
+
+    Id                      : 1085e55c-3077-8e71-ae67-8a2613e88410
+    Name                    : Windows2Vol1
+    ConnectionCount         : 1
+    Created                 : 6/18/2024 3:33:34 PM
+    Destroyed               : False
+    HostEncryptionKeyStatus : none
+    PriorityAdjustment      : @{PriorityAdjustmentOperator='+'; PriorityAdjustmentValue=0}
+    Provisioned             : 21474836480
+    Qos                     : 
+    Serial                  : B64D29B183714E0600012396
+    Space                   : @{DataReduction=3.057086; Snapshots=5902; ThinProvisioning=0.9985566; TotalPhysical=77316; TotalProvisioned=21474836480; TotalReduction=2117.891; 
+                            Unique=71414; Virtual=30998016; SnapshotsEffective=480092672; TotalEffective=482744320; UniqueEffective=2651648}
+    TimeRemaining           : 
+    Pod                     : 
+    Priority                : 0
+    PromotionStatus         : promoted
+    RequestedPromotionState : promoted
+    Source                  : @{Id='cc8b751e-ec39-3f05-c485-f164f325451d'; Name='Windows1Vol1'}
+    Subtype                 : regular
+    VolumeGroup             : 
+
     ```
 1. Online the volume on Windows2.
     ```
@@ -78,10 +103,13 @@ In this section of code you are cloning a volume and presenting it to a second W
     $Query = "CREATE DATABASE [TPCC100] ON ( FILENAME = N'D:\SQL\tpcc100.mdf' ), ( FILENAME = N'D:\SQL\tpcc100_log.ldf' ) FOR ATTACH"
     Invoke-DbaQuery -SqlInstance $TargetSqlInstance -Database master -Query $Query 
     ```
-1. Verify the cloned database on the target SQL instance (Windows2). We cloned the database instantly between two instances of SQL Server
+1. Verify the cloned database on the target SQL instance (Windows2). We cloned the database instantly between two instances of SQL Server!
     ```
-    Get-DbaDatabase -SqlInstance $TargetSqlInstance -Database 'TPCC100' |
-    Select-Object Name, SizeMB
+    Get-DbaDatabase -SqlInstance $TargetSqlInstance -Database 'TPCC100' | Select-Object Name, SizeMB
+
+    Name    SizeMB
+    ----    ------
+    TPCC100  12288
     ```
 
 ## Activity Summary
