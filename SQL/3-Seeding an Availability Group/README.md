@@ -1,7 +1,7 @@
 # Lab 2 - Seeding an Availability Group - Using SQL Server 2022's T-SQL Snapshot Backup 
 
 # Scenario
-In this activity, you will build an Availability Group from Snapshot leveraging FlashArray snapshots and the new [TSQL Based Snapshot Backup](https://docs.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16) functionality in SQL Server 2022.
+In this activity, you will build an Availability Group from Snapshot leveraging FlashArray snapshots and the new [TSQL Based Snapshot Backup](https://docs.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16) functionality in SQL Server 2022. This lab is on both **Windows1** and **Windows2**
 
 If you’ve been using Availability Groups, you’re familiar with the process of replica seeding (sometimes called initializing, preparing, or data synchronization). Seeding is a size of data operation, copying data from a primary replica to one or more secondary replicas. This is required before joining a database to an Availability Group. You can seed a replica with backup and restore, or with automatic seeding, each of which present their own challenges. Regardless of which method you use, the seeding operation can take an extended amount of time. The time it takes to seed a replica is based on the database's size, network, and storage speed. If you have multiple replicas, then seeding all of them is N times the fun!
 
@@ -14,6 +14,9 @@ So let’s do it...we’re going to snapshot a database on **Windows1**, clone t
 ## Demo Overview
 
 Here's a high-level overview of the process:
+
+**Windows1** - This will be the **primary replica** in the availability group. The TPCC100 database, in this instance, will become the source of the availability group database. You will clone this database to **Windows2**.
+**Windows2** - This will be the **secondary replica** in the availability group. There is already a copy of TPCC100 on this instance from a previous demo. You will overwrite that database with a clone operation based off of a snapshot from **Windows1**
 
 * [Snapshot Backup on Primary Replica](#2---snapshot-backup-on-primary-replica) - Seeding an availability requires a full backup or direct seeding to move the data between replicas. Here, you will take a snapshot, allowing you to clone the volume instantly. 
 * [Prepare Secondary Replica](#3---prepare-secondary-replica)—Rather than performing a full restore, you will perform a point-in-time restore instantly using a clone. You will then perform the normal seeding operations of taking an additional log backup on the primary, restoring it on the secondary replica,, leaving the database in `RESTORING` mode, and preparing it to join the AG.
