@@ -10,8 +10,8 @@
 #    Also an option parameter to simulate opening an incident ticke
 #
 # Example Calls:
-#    C:\Workshop\FB_Configdrift\FBConfigDrift.ps1 -mode "plan"
-#    C:\Workshop\FB_Configdrift\FBConfigDrift.ps1 -mode "apply" -openincident $true
+#    C:\Workshop\ConfigDrift-Examples\FB_Configdrift\FBConfigDrift.ps1 -mode "plan"
+#    C:\Workshop\ConfigDrift-Examples\FB_Configdrift\FBConfigDrift.ps1 -mode "apply" -openincident $true
 #
 # Other Notes:
 #    Created by Cody Mautner in Pure Professional Services as an oversimplified version of configuration drift.  To account for all settings and to have an enterprise solution
@@ -25,7 +25,7 @@
 
 PARAM(
 [Parameter(Mandatory=$false, Position=0)]
-[string] $configPath = ".\fbarrayconfig.json",    #location of our configuration file
+[string] $configPath = "C:\Workshop\ConfigDrift-Examples\FB_Configdrift\fbarrayconfig.json",    #location of our configuration file
 [Parameter(Mandatory=$false, Position=1)]
 [ValidateSet("plan","apply")]
 [string] $mode = "plan",                          #Plan will show pending changes, apply will implement the changes
