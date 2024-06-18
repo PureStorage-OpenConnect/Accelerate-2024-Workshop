@@ -127,8 +127,6 @@ Add the following tasks to the playbook:
         state: mounted
 ```
 
-Note that if using RHEL or CentOS the `scsi-rescan` command will need to be replaced with `rescan-scsi-bus.sh` that is provided in the `sg3_utils` package.
-
 Run the playbook - Execute the following:
 
 ```

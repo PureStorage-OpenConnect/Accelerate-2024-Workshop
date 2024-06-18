@@ -6,6 +6,7 @@
   vars:
     url: flasharray1.testdrive.local
     api: e448c603-ecfd-8b4e-fc02-0d742e81a779
+    ansible_hostname: ansiblehost
     vol: volume_a
   tasks:
     - name: CONNECT VOLUMES
