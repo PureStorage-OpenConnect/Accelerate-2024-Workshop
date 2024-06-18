@@ -100,7 +100,7 @@ Here is a description of the major activities in this lab:
     VERBOSE: Database 'TPCC100' originally suspended for snapshot backup in session 149 successfully resumed in session 149.
     VERBOSE: Processed 0 pages for database 'TPCC100', file 'tpcc100' on file 1.
     VERBOSE: BACKUP DATABASE successfully processed 0 pages in 0.027 seconds (0.000 MB/sec).
-    ``
+    ```
 
 ## 3 - Examine the backup history according to SQL Server, check the error log and the backup history
 
