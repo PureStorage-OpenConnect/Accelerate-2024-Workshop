@@ -19,6 +19,7 @@ This Workshop aims to train data and storage professionals to use storage subsys
 In this Workshop you'll learn:
 
 - How to use snapshots to reduce the time it takes to move data between SQL Server instances
+- Differentiate between crash-consistent and application consistent snapshots
 - How to use SQL Server 2022's T-SQL backup snapshots to perform point-in-time database restores
 - How to use SQL Server 2022's T-SQL backup snapshots to build an availability group from a snapshot
 
@@ -47,6 +48,15 @@ The Workshop includes the following technologies, which form the basis of the Wo
 | [Pure Storage FlashArray](https://www.purestorage.com/products.html)       | This Workshop uses a Pure Storage FlashArray as a block device as a storage subsystem for SQL Server |
 
 <br />
+
+## Crash Consistent and Application Consistent Snapshots
+
+This workshop uses both *crash-consistent* and *application-consistent* snapshots. A crash-consistent snapshot means the application is unaware that a snapshot of its volumes has been taken. On a Pure Storage FlashArray, a clone of the volume supporting the database will always give you back a recoverable database. When using crash-consistent snapshots, the recovery point is the snapshot. You cannot roll the database forward or backwards with log backup, This is called a point in time restore.
+
+To perform a point-in-time restore using snapshots, you must use an application-consistent snapshot, which allows you to use a snapshot as a base for point-in-time recovery. In other words, you can then restore log backups into a database restored from an application consistent snapshot. In this lab, you will use a crash-consistent snapshot. In the remaining labs in this workshop, you will use SQL Server 2022's [TSQL Based Snapshot Backup](https://docs.microsoft.com/en-us/sql/relational-databases/backup-restore/create-a-transact-sql-snapshot-backup?view=sql-server-ver16) to perform application-consistent snapshots.
+
+In our first lab [1 - Volume Database Refresh](./1-Volume%20Database%20Refresh/README.md), you will use a crash-consistent snapshot; in the other labs, you will use application-consistent snapshots.
+
 
 # Lab Layout
 
