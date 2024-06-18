@@ -108,6 +108,7 @@ Here is a description of the major activities in this lab:
 
     ```
     Get-DbaErrorLog -SqlInstance $SqlInstance -LogNumber 0 | Format-Table
+
     Windows1     MSSQLSERVER  Windows1    6/18/2024 8:37:59 AM spid149 Database 'TPCC100' originally suspended for snapshot backup in session 149 successfully resumed in session 149.  
     Windows1     MSSQLSERVER  Windows1    6/18/2024 8:37:59 AM Backup  Database backed up. Database: TPCC100, creation date(time): 2023/04/26(01:31:53), pages dumped: 917114, first ...
     Windows1     MSSQLSERVER  Windows1    6/18/2024 8:37:59 AM Backup  BACKUP DATABASE successfully processed 0 pages in 0.027 seconds (0.000 MB/sec)....
@@ -285,7 +286,6 @@ Here is a description of the major activities in this lab:
     ComputerName InstanceName SqlInstance Database Schema Name     IndexSpaceUsed DataSpaceUsed RowCount HasClusteredIndex IsFileTable IsMemoryOptimized IsPartitioned FullTextIndex 
     ------------ ------------ ----------- -------- ------ ----     -------------- ------------- -------- ----------------- ----------- ----------------- ------------- ------------- 
     Windows1     MSSQLSERVER  Windows1    TPCC100  dbo    customer          43744        654568   900000              True       False             False         False               
-
     ```
 
 ## Activity Summary
