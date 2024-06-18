@@ -6,7 +6,7 @@
   vars:
     url: flasharray1.testdrive.local
     api: e448c603-ecfd-8b4e-fc02-0d742e81a779
-    ansible_hostname: ansible_hostname
+    ansible_hostname: ansiblehost
     ansible_iscsi_iqn: iqn.1994-05.com.redhat:ansible_hostname
   tasks:
     - name: CREATE HOST
