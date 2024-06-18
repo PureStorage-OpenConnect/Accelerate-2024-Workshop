@@ -11,13 +11,14 @@ In addition to saving you time, this process saves your database systems from th
 
 So let’s do it...we’re going to snapshot a database on **Windows1**, clone that snapshot to the second instance of SQL Server on **Windows2**, and seed an Availability Group replica from that. 
 
+## Demo Overview
+
 Here's a high-level overview of the process:
 
 * [Snapshot Backup on Primary Replica](#2---snapshot-backup-on-primary-replica) - Seeding an availability requires a full backup or direct seeding to move the data between replicas. Here, you will take a snapshot, allowing you to clone the volume instantly. 
 * [Prepare Secondary Replica](#3---prepare-secondary-replica)—Rather than performing a full restore, you will perform a point-in-time restore instantly using a clone. You will then perform the normal seeding operations of taking an additional log backup on the primary, restoring it on the secondary replica,, leaving the database in `RESTORING` mode, and preparing it to join the AG.
 * [Create the Availability Group](#4---create-the-availability-group) - Create the availability group using the cmdlet `New-DbaAvailabilityGroup`. This operation should only take several seconds. 
 * [Validation](#5---validation) - Once finished, ensure that the synchronization state is **"Synchronized"**. 
-
 
 Here is a description of the major activities in this lab:
 
