@@ -64,7 +64,7 @@ Add the following information into the `vars` section of the playbook:
 
 ```
     target_url: flasharray2.testdrive.local
-    target_api: 24a96e35-e0e2-806e-c0cc-eaf45e7fa887
+    target_api: ace81cf0-7c6d-98a4-ff12-13c4c1cc14b3
 ```
 
 Replace the task in your YAML file, with the following:
