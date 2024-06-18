@@ -10,6 +10,6 @@
     - name: UPDATE PG
       purestorage.flasharray.purefa_pg:
         name: workshop-pg
-        target: flasharray2.testdrive.local
+        target: 10.0.0.21
         fa_url: "{{ url }}"
         api_token: "{{ api }}"

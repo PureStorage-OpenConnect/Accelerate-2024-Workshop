@@ -67,8 +67,8 @@ This bonus exercise allows you to perform the pod stretch in a fully automated f
 Add the following information into the `vars` section of the playbook:
 
 ```
-    target_url: flasharray2.testdrive.local
-    target_api: ace81cf0-7c6d-98a4-ff12-13c4c1cc14b3
+    target_url: 10.0.0.21
+    target_api: d993477e-e9e5-5527-7bc3-c2721da464bf
 ```
 
 Replace the second task in your YAML file, the pod stretch task, with the following:

@@ -13,8 +13,8 @@ Demonstrate the use of the [purefa_connect module](https://docs.ansible.com/ansi
 - The `vars:` parameter is a group of parameters to be used in the playbook.
 - `url: flasharray1.testdrive.local` is the management IP address of your source FlashArray - change this reflect your local environment.
 - `api: e448c603-ecfd-8b4e-fc02-0d742e81a779` is the API token for a user on the source FlashArray - change this reflect your local environment.
-- `target_url: flasharray2.testdrive.local` is the management IP address of your target FlashArray - change this reflect your local environment.
-- `target_api: ace81cf0-7c6d-98a4-ff12-13c4c1cc14b3` is the API token for a user on the target FlashArray - change this reflect your local environment.
+- `target_url: 10.0.0.21` is the management IP address of your target FlashArray - change this reflect your local environment.
+- `target_api: d993477e-e9e5-5527-7bc3-c2721da464bf` is the API token for a user on the target FlashArray - change this reflect your local environment.
 - `name: CREATE ASYNC|SYNC CONNECTION` is a user defined description that will display in the terminal output.
 - `purefa_connect:` tells the task which module to use.
 - The `connection` parameter tells the module the type of replication connection to create. Choices are `async` or `sync`.
